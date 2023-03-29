@@ -2,6 +2,8 @@ FROM golang:1.20.2-alpine3.17
 
 WORKDIR /mission_service
 
+RUN go install github.com/cosmtrek/air@v1.42.0
+
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -9,4 +11,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["go", "run", "server.go"]
+CMD ["air", "-c", ".air.toml"]
