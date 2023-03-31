@@ -1,7 +1,7 @@
 RUN = docker compose exec api
 
 up:
-	docker compose up -d
+	docker compose up
 
 migration/new:
 	${RUN} sql-migrate new ${FILE_NAME}
@@ -11,3 +11,6 @@ migration/up:
 
 migration/down:
 	${RUN} sql-migrate down --env="local"
+
+sqlboiler:
+	${RUN} sqlboiler psql
