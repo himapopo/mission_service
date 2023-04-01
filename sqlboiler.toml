@@ -1,0 +1,13 @@
+wipe     = true
+no-tests = true
+add-enum-types = true
+
+[psql]
+  dbname = "mission_service"
+  host   = "db"
+  port   = 5432
+  user   = "root"
+  pass   = "password"
+  schema = "public"
+  sslmode = "disable"
+  blacklist = ["migrations"]
