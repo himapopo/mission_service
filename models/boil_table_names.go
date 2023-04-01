@@ -4,7 +4,39 @@
 package models
 
 var TableNames = struct {
-	Monsters string
+	CoinCountMissions        string
+	GetItemMissions          string
+	Items                    string
+	LoginMissions            string
+	MissionRewardCoins       string
+	MissionRewardItems       string
+	Missions                 string
+	MonsterKillCountMissions string
+	MonsterKillMissions      string
+	MonsterLevelUpMissions   string
+	Monsters                 string
+	MonstersLevelUpMissions  string
+	UserItems                string
+	UserMissions             string
+	UserMonsterKillHistories string
+	UserMonsters             string
+	Users                    string
 }{
-	Monsters: "monsters",
+	CoinCountMissions:        "coin_count_missions",
+	GetItemMissions:          "get_item_missions",
+	Items:                    "items",
+	LoginMissions:            "login_missions",
+	MissionRewardCoins:       "mission_reward_coins",
+	MissionRewardItems:       "mission_reward_items",
+	Missions:                 "missions",
+	MonsterKillCountMissions: "monster_kill_count_missions",
+	MonsterKillMissions:      "monster_kill_missions",
+	MonsterLevelUpMissions:   "monster_level_up_missions",
+	Monsters:                 "monsters",
+	MonstersLevelUpMissions:  "monsters_level_up_missions",
+	UserItems:                "user_items",
+	UserMissions:             "user_missions",
+	UserMonsterKillHistories: "user_monster_kill_histories",
+	UserMonsters:             "user_monsters",
+	Users:                    "users",
 }
