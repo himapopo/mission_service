@@ -1,7 +1,7 @@
 RUN = docker compose exec api
 
 up:
-	docker compose up
+	docker compose up -d
 
 migration/new:
 	${RUN} sql-migrate new ${FILE_NAME}

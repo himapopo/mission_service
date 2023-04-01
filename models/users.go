@@ -21,144 +21,175 @@ import (
 	"github.com/volatiletech/strmangle"
 )
 
-// Monster is an object representing the database table.
-type Monster struct {
+// User is an object representing the database table.
+type User struct {
 	ID int64 `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// 名前
-	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
+	// メールアドレス
+	Email string `boil:"email" json:"email" toml:"email" yaml:"email"`
+	// 暗号化済みパスワード
+	Password string `boil:"password" json:"password" toml:"password" yaml:"password"`
+	// 獲得コイン数
+	CoinCount   int64     `boil:"coin_count" json:"coin_count" toml:"coin_count" yaml:"coin_count"`
+	LastLoginAt time.Time `boil:"last_login_at" json:"last_login_at" toml:"last_login_at" yaml:"last_login_at"`
+	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
-	R *monsterR `boil:"-" json:"-" toml:"-" yaml:"-"`
-	L monsterL  `boil:"-" json:"-" toml:"-" yaml:"-"`
+	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
+	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
-var MonsterColumns = struct {
-	ID        string
-	Name      string
-	UpdatedAt string
-	CreatedAt string
+var UserColumns = struct {
+	ID          string
+	Name        string
+	Email       string
+	Password    string
+	CoinCount   string
+	LastLoginAt string
+	UpdatedAt   string
+	CreatedAt   string
 }{
-	ID:        "id",
-	Name:      "name",
-	UpdatedAt: "updated_at",
-	CreatedAt: "created_at",
+	ID:          "id",
+	Name:        "name",
+	Email:       "email",
+	Password:    "password",
+	CoinCount:   "coin_count",
+	LastLoginAt: "last_login_at",
+	UpdatedAt:   "updated_at",
+	CreatedAt:   "created_at",
 }
 
-var MonsterTableColumns = struct {
-	ID        string
-	Name      string
-	UpdatedAt string
-	CreatedAt string
+var UserTableColumns = struct {
+	ID          string
+	Name        string
+	Email       string
+	Password    string
+	CoinCount   string
+	LastLoginAt string
+	UpdatedAt   string
+	CreatedAt   string
 }{
-	ID:        "monsters.id",
-	Name:      "monsters.name",
-	UpdatedAt: "monsters.updated_at",
-	CreatedAt: "monsters.created_at",
+	ID:          "users.id",
+	Name:        "users.name",
+	Email:       "users.email",
+	Password:    "users.password",
+	CoinCount:   "users.coin_count",
+	LastLoginAt: "users.last_login_at",
+	UpdatedAt:   "users.updated_at",
+	CreatedAt:   "users.created_at",
 }
 
 // Generated where
 
-var MonsterWhere = struct {
-	ID        whereHelperint64
-	Name      whereHelperstring
-	UpdatedAt whereHelpertime_Time
-	CreatedAt whereHelpertime_Time
+var UserWhere = struct {
+	ID          whereHelperint64
+	Name        whereHelperstring
+	Email       whereHelperstring
+	Password    whereHelperstring
+	CoinCount   whereHelperint64
+	LastLoginAt whereHelpertime_Time
+	UpdatedAt   whereHelpertime_Time
+	CreatedAt   whereHelpertime_Time
 }{
-	ID:        whereHelperint64{field: "\"monsters\".\"id\""},
-	Name:      whereHelperstring{field: "\"monsters\".\"name\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"monsters\".\"updated_at\""},
-	CreatedAt: whereHelpertime_Time{field: "\"monsters\".\"created_at\""},
+	ID:          whereHelperint64{field: "\"users\".\"id\""},
+	Name:        whereHelperstring{field: "\"users\".\"name\""},
+	Email:       whereHelperstring{field: "\"users\".\"email\""},
+	Password:    whereHelperstring{field: "\"users\".\"password\""},
+	CoinCount:   whereHelperint64{field: "\"users\".\"coin_count\""},
+	LastLoginAt: whereHelpertime_Time{field: "\"users\".\"last_login_at\""},
+	UpdatedAt:   whereHelpertime_Time{field: "\"users\".\"updated_at\""},
+	CreatedAt:   whereHelpertime_Time{field: "\"users\".\"created_at\""},
 }
 
-// MonsterRels is where relationship names are stored.
-var MonsterRels = struct {
-	MonsterKillMissions      string
-	MonsterLevelUpMissions   string
+// UserRels is where relationship names are stored.
+var UserRels = struct {
+	UserItems                string
+	UserMissions             string
 	UserMonsterKillHistories string
 	UserMonsters             string
 }{
-	MonsterKillMissions:      "MonsterKillMissions",
-	MonsterLevelUpMissions:   "MonsterLevelUpMissions",
+	UserItems:                "UserItems",
+	UserMissions:             "UserMissions",
 	UserMonsterKillHistories: "UserMonsterKillHistories",
 	UserMonsters:             "UserMonsters",
 }
 
-// monsterR is where relationships are stored.
-type monsterR struct {
-	MonsterKillMissions      MonsterKillMissionSlice     `boil:"MonsterKillMissions" json:"MonsterKillMissions" toml:"MonsterKillMissions" yaml:"MonsterKillMissions"`
-	MonsterLevelUpMissions   MonsterLevelUpMissionSlice  `boil:"MonsterLevelUpMissions" json:"MonsterLevelUpMissions" toml:"MonsterLevelUpMissions" yaml:"MonsterLevelUpMissions"`
+// userR is where relationships are stored.
+type userR struct {
+	UserItems                UserItemSlice               `boil:"UserItems" json:"UserItems" toml:"UserItems" yaml:"UserItems"`
+	UserMissions             UserMissionSlice            `boil:"UserMissions" json:"UserMissions" toml:"UserMissions" yaml:"UserMissions"`
 	UserMonsterKillHistories UserMonsterKillHistorySlice `boil:"UserMonsterKillHistories" json:"UserMonsterKillHistories" toml:"UserMonsterKillHistories" yaml:"UserMonsterKillHistories"`
 	UserMonsters             UserMonsterSlice            `boil:"UserMonsters" json:"UserMonsters" toml:"UserMonsters" yaml:"UserMonsters"`
 }
 
 // NewStruct creates a new relationship struct
-func (*monsterR) NewStruct() *monsterR {
-	return &monsterR{}
+func (*userR) NewStruct() *userR {
+	return &userR{}
 }
 
-func (r *monsterR) GetMonsterKillMissions() MonsterKillMissionSlice {
+func (r *userR) GetUserItems() UserItemSlice {
 	if r == nil {
 		return nil
 	}
-	return r.MonsterKillMissions
+	return r.UserItems
 }
 
-func (r *monsterR) GetMonsterLevelUpMissions() MonsterLevelUpMissionSlice {
+func (r *userR) GetUserMissions() UserMissionSlice {
 	if r == nil {
 		return nil
 	}
-	return r.MonsterLevelUpMissions
+	return r.UserMissions
 }
 
-func (r *monsterR) GetUserMonsterKillHistories() UserMonsterKillHistorySlice {
+func (r *userR) GetUserMonsterKillHistories() UserMonsterKillHistorySlice {
 	if r == nil {
 		return nil
 	}
 	return r.UserMonsterKillHistories
 }
 
-func (r *monsterR) GetUserMonsters() UserMonsterSlice {
+func (r *userR) GetUserMonsters() UserMonsterSlice {
 	if r == nil {
 		return nil
 	}
 	return r.UserMonsters
 }
 
-// monsterL is where Load methods for each relationship are stored.
-type monsterL struct{}
+// userL is where Load methods for each relationship are stored.
+type userL struct{}
 
 var (
-	monsterAllColumns            = []string{"id", "name", "updated_at", "created_at"}
-	monsterColumnsWithoutDefault = []string{"name"}
-	monsterColumnsWithDefault    = []string{"id", "updated_at", "created_at"}
-	monsterPrimaryKeyColumns     = []string{"id"}
-	monsterGeneratedColumns      = []string{}
+	userAllColumns            = []string{"id", "name", "email", "password", "coin_count", "last_login_at", "updated_at", "created_at"}
+	userColumnsWithoutDefault = []string{"name", "email", "password"}
+	userColumnsWithDefault    = []string{"id", "coin_count", "last_login_at", "updated_at", "created_at"}
+	userPrimaryKeyColumns     = []string{"id"}
+	userGeneratedColumns      = []string{}
 )
 
 type (
-	// MonsterSlice is an alias for a slice of pointers to Monster.
-	// This should almost always be used instead of []Monster.
-	MonsterSlice []*Monster
-	// MonsterHook is the signature for custom Monster hook methods
-	MonsterHook func(context.Context, boil.ContextExecutor, *Monster) error
+	// UserSlice is an alias for a slice of pointers to User.
+	// This should almost always be used instead of []User.
+	UserSlice []*User
+	// UserHook is the signature for custom User hook methods
+	UserHook func(context.Context, boil.ContextExecutor, *User) error
 
-	monsterQuery struct {
+	userQuery struct {
 		*queries.Query
 	}
 )
 
 // Cache for insert, update and upsert
 var (
-	monsterType                 = reflect.TypeOf(&Monster{})
-	monsterMapping              = queries.MakeStructMapping(monsterType)
-	monsterPrimaryKeyMapping, _ = queries.BindMapping(monsterType, monsterMapping, monsterPrimaryKeyColumns)
-	monsterInsertCacheMut       sync.RWMutex
-	monsterInsertCache          = make(map[string]insertCache)
-	monsterUpdateCacheMut       sync.RWMutex
-	monsterUpdateCache          = make(map[string]updateCache)
-	monsterUpsertCacheMut       sync.RWMutex
-	monsterUpsertCache          = make(map[string]insertCache)
+	userType                 = reflect.TypeOf(&User{})
+	userMapping              = queries.MakeStructMapping(userType)
+	userPrimaryKeyMapping, _ = queries.BindMapping(userType, userMapping, userPrimaryKeyColumns)
+	userInsertCacheMut       sync.RWMutex
+	userInsertCache          = make(map[string]insertCache)
+	userUpdateCacheMut       sync.RWMutex
+	userUpdateCache          = make(map[string]updateCache)
+	userUpsertCacheMut       sync.RWMutex
+	userUpsertCache          = make(map[string]insertCache)
 )
 
 var (
@@ -169,27 +200,27 @@ var (
 	_ = qmhelper.Where
 )
 
-var monsterAfterSelectHooks []MonsterHook
+var userAfterSelectHooks []UserHook
 
-var monsterBeforeInsertHooks []MonsterHook
-var monsterAfterInsertHooks []MonsterHook
+var userBeforeInsertHooks []UserHook
+var userAfterInsertHooks []UserHook
 
-var monsterBeforeUpdateHooks []MonsterHook
-var monsterAfterUpdateHooks []MonsterHook
+var userBeforeUpdateHooks []UserHook
+var userAfterUpdateHooks []UserHook
 
-var monsterBeforeDeleteHooks []MonsterHook
-var monsterAfterDeleteHooks []MonsterHook
+var userBeforeDeleteHooks []UserHook
+var userAfterDeleteHooks []UserHook
 
-var monsterBeforeUpsertHooks []MonsterHook
-var monsterAfterUpsertHooks []MonsterHook
+var userBeforeUpsertHooks []UserHook
+var userAfterUpsertHooks []UserHook
 
 // doAfterSelectHooks executes all "after Select" hooks.
-func (o *Monster) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterAfterSelectHooks {
+	for _, hook := range userAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -199,12 +230,12 @@ func (o *Monster) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Monster) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterBeforeInsertHooks {
+	for _, hook := range userBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -214,12 +245,12 @@ func (o *Monster) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExec
 }
 
 // doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Monster) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterAfterInsertHooks {
+	for _, hook := range userAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -229,12 +260,12 @@ func (o *Monster) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Monster) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterBeforeUpdateHooks {
+	for _, hook := range userBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -244,12 +275,12 @@ func (o *Monster) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExec
 }
 
 // doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Monster) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterAfterUpdateHooks {
+	for _, hook := range userAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -259,12 +290,12 @@ func (o *Monster) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Monster) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterBeforeDeleteHooks {
+	for _, hook := range userBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -274,12 +305,12 @@ func (o *Monster) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExec
 }
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Monster) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterAfterDeleteHooks {
+	for _, hook := range userAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -289,12 +320,12 @@ func (o *Monster) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Monster) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterBeforeUpsertHooks {
+	for _, hook := range userBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -304,12 +335,12 @@ func (o *Monster) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExec
 }
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Monster) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *User) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range monsterAfterUpsertHooks {
+	for _, hook := range userAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -318,33 +349,33 @@ func (o *Monster) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecu
 	return nil
 }
 
-// AddMonsterHook registers your hook function for all future operations.
-func AddMonsterHook(hookPoint boil.HookPoint, monsterHook MonsterHook) {
+// AddUserHook registers your hook function for all future operations.
+func AddUserHook(hookPoint boil.HookPoint, userHook UserHook) {
 	switch hookPoint {
 	case boil.AfterSelectHook:
-		monsterAfterSelectHooks = append(monsterAfterSelectHooks, monsterHook)
+		userAfterSelectHooks = append(userAfterSelectHooks, userHook)
 	case boil.BeforeInsertHook:
-		monsterBeforeInsertHooks = append(monsterBeforeInsertHooks, monsterHook)
+		userBeforeInsertHooks = append(userBeforeInsertHooks, userHook)
 	case boil.AfterInsertHook:
-		monsterAfterInsertHooks = append(monsterAfterInsertHooks, monsterHook)
+		userAfterInsertHooks = append(userAfterInsertHooks, userHook)
 	case boil.BeforeUpdateHook:
-		monsterBeforeUpdateHooks = append(monsterBeforeUpdateHooks, monsterHook)
+		userBeforeUpdateHooks = append(userBeforeUpdateHooks, userHook)
 	case boil.AfterUpdateHook:
-		monsterAfterUpdateHooks = append(monsterAfterUpdateHooks, monsterHook)
+		userAfterUpdateHooks = append(userAfterUpdateHooks, userHook)
 	case boil.BeforeDeleteHook:
-		monsterBeforeDeleteHooks = append(monsterBeforeDeleteHooks, monsterHook)
+		userBeforeDeleteHooks = append(userBeforeDeleteHooks, userHook)
 	case boil.AfterDeleteHook:
-		monsterAfterDeleteHooks = append(monsterAfterDeleteHooks, monsterHook)
+		userAfterDeleteHooks = append(userAfterDeleteHooks, userHook)
 	case boil.BeforeUpsertHook:
-		monsterBeforeUpsertHooks = append(monsterBeforeUpsertHooks, monsterHook)
+		userBeforeUpsertHooks = append(userBeforeUpsertHooks, userHook)
 	case boil.AfterUpsertHook:
-		monsterAfterUpsertHooks = append(monsterAfterUpsertHooks, monsterHook)
+		userAfterUpsertHooks = append(userAfterUpsertHooks, userHook)
 	}
 }
 
-// One returns a single monster record from the query.
-func (q monsterQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Monster, error) {
-	o := &Monster{}
+// One returns a single user record from the query.
+func (q userQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, error) {
+	o := &User{}
 
 	queries.SetLimit(q.Query, 1)
 
@@ -353,7 +384,7 @@ func (q monsterQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Mons
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: failed to execute a one query for monsters")
+		return nil, errors.Wrap(err, "models: failed to execute a one query for users")
 	}
 
 	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
@@ -363,16 +394,16 @@ func (q monsterQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Mons
 	return o, nil
 }
 
-// All returns all Monster records from the query.
-func (q monsterQuery) All(ctx context.Context, exec boil.ContextExecutor) (MonsterSlice, error) {
-	var o []*Monster
+// All returns all User records from the query.
+func (q userQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error) {
+	var o []*User
 
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
-		return nil, errors.Wrap(err, "models: failed to assign all query results to Monster slice")
+		return nil, errors.Wrap(err, "models: failed to assign all query results to User slice")
 	}
 
-	if len(monsterAfterSelectHooks) != 0 {
+	if len(userAfterSelectHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
 				return o, err
@@ -383,8 +414,8 @@ func (q monsterQuery) All(ctx context.Context, exec boil.ContextExecutor) (Monst
 	return o, nil
 }
 
-// Count returns the count of all Monster records in the query.
-func (q monsterQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+// Count returns the count of all User records in the query.
+func (q userQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,14 +423,14 @@ func (q monsterQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to count monsters rows")
+		return 0, errors.Wrap(err, "models: failed to count users rows")
 	}
 
 	return count, nil
 }
 
 // Exists checks if the row exists in the table.
-func (q monsterQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q userQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -408,92 +439,92 @@ func (q monsterQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "models: failed to check if monsters exists")
+		return false, errors.Wrap(err, "models: failed to check if users exists")
 	}
 
 	return count > 0, nil
 }
 
-// MonsterKillMissions retrieves all the monster_kill_mission's MonsterKillMissions with an executor.
-func (o *Monster) MonsterKillMissions(mods ...qm.QueryMod) monsterKillMissionQuery {
+// UserItems retrieves all the user_item's UserItems with an executor.
+func (o *User) UserItems(mods ...qm.QueryMod) userItemQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"monster_kill_missions\".\"monster_id\"=?", o.ID),
+		qm.Where("\"user_items\".\"user_id\"=?", o.ID),
 	)
 
-	return MonsterKillMissions(queryMods...)
+	return UserItems(queryMods...)
 }
 
-// MonsterLevelUpMissions retrieves all the monster_level_up_mission's MonsterLevelUpMissions with an executor.
-func (o *Monster) MonsterLevelUpMissions(mods ...qm.QueryMod) monsterLevelUpMissionQuery {
+// UserMissions retrieves all the user_mission's UserMissions with an executor.
+func (o *User) UserMissions(mods ...qm.QueryMod) userMissionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"monster_level_up_missions\".\"monster_id\"=?", o.ID),
+		qm.Where("\"user_missions\".\"user_id\"=?", o.ID),
 	)
 
-	return MonsterLevelUpMissions(queryMods...)
+	return UserMissions(queryMods...)
 }
 
 // UserMonsterKillHistories retrieves all the user_monster_kill_history's UserMonsterKillHistories with an executor.
-func (o *Monster) UserMonsterKillHistories(mods ...qm.QueryMod) userMonsterKillHistoryQuery {
+func (o *User) UserMonsterKillHistories(mods ...qm.QueryMod) userMonsterKillHistoryQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"user_monster_kill_histories\".\"monster_id\"=?", o.ID),
+		qm.Where("\"user_monster_kill_histories\".\"user_id\"=?", o.ID),
 	)
 
 	return UserMonsterKillHistories(queryMods...)
 }
 
 // UserMonsters retrieves all the user_monster's UserMonsters with an executor.
-func (o *Monster) UserMonsters(mods ...qm.QueryMod) userMonsterQuery {
+func (o *User) UserMonsters(mods ...qm.QueryMod) userMonsterQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"user_monsters\".\"monster_id\"=?", o.ID),
+		qm.Where("\"user_monsters\".\"user_id\"=?", o.ID),
 	)
 
 	return UserMonsters(queryMods...)
 }
 
-// LoadMonsterKillMissions allows an eager lookup of values, cached into the
+// LoadUserItems allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMonster interface{}, mods queries.Applicator) error {
-	var slice []*Monster
-	var object *Monster
+func (userL) LoadUserItems(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+	var slice []*User
+	var object *User
 
 	if singular {
 		var ok bool
-		object, ok = maybeMonster.(*Monster)
+		object, ok = maybeUser.(*User)
 		if !ok {
-			object = new(Monster)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeMonster)
+			object = new(User)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUser))
 			}
 		}
 	} else {
-		s, ok := maybeMonster.(*[]*Monster)
+		s, ok := maybeUser.(*[]*User)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeMonster)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUser))
 			}
 		}
 	}
@@ -501,14 +532,14 @@ func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecu
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &monsterR{}
+			object.R = &userR{}
 		}
 		args = append(args, object.ID)
 	} else {
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &monsterR{}
+				obj.R = &userR{}
 			}
 
 			for _, a := range args {
@@ -526,8 +557,8 @@ func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecu
 	}
 
 	query := NewQuery(
-		qm.From(`monster_kill_missions`),
-		qm.WhereIn(`monster_kill_missions.monster_id in ?`, args...),
+		qm.From(`user_items`),
+		qm.WhereIn(`user_items.user_id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -535,22 +566,22 @@ func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecu
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load monster_kill_missions")
+		return errors.Wrap(err, "failed to eager load user_items")
 	}
 
-	var resultSlice []*MonsterKillMission
+	var resultSlice []*UserItem
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice monster_kill_missions")
+		return errors.Wrap(err, "failed to bind eager loaded slice user_items")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on monster_kill_missions")
+		return errors.Wrap(err, "failed to close results in eager load on user_items")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for monster_kill_missions")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_items")
 	}
 
-	if len(monsterKillMissionAfterSelectHooks) != 0 {
+	if len(userItemAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -558,24 +589,24 @@ func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecu
 		}
 	}
 	if singular {
-		object.R.MonsterKillMissions = resultSlice
+		object.R.UserItems = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &monsterKillMissionR{}
+				foreign.R = &userItemR{}
 			}
-			foreign.R.Monster = object
+			foreign.R.User = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if local.ID == foreign.MonsterID {
-				local.R.MonsterKillMissions = append(local.R.MonsterKillMissions, foreign)
+			if local.ID == foreign.UserID {
+				local.R.UserItems = append(local.R.UserItems, foreign)
 				if foreign.R == nil {
-					foreign.R = &monsterKillMissionR{}
+					foreign.R = &userItemR{}
 				}
-				foreign.R.Monster = local
+				foreign.R.User = local
 				break
 			}
 		}
@@ -584,30 +615,30 @@ func (monsterL) LoadMonsterKillMissions(ctx context.Context, e boil.ContextExecu
 	return nil
 }
 
-// LoadMonsterLevelUpMissions allows an eager lookup of values, cached into the
+// LoadUserMissions allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMonster interface{}, mods queries.Applicator) error {
-	var slice []*Monster
-	var object *Monster
+func (userL) LoadUserMissions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+	var slice []*User
+	var object *User
 
 	if singular {
 		var ok bool
-		object, ok = maybeMonster.(*Monster)
+		object, ok = maybeUser.(*User)
 		if !ok {
-			object = new(Monster)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeMonster)
+			object = new(User)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUser))
 			}
 		}
 	} else {
-		s, ok := maybeMonster.(*[]*Monster)
+		s, ok := maybeUser.(*[]*User)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeMonster)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUser))
 			}
 		}
 	}
@@ -615,14 +646,14 @@ func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextEx
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &monsterR{}
+			object.R = &userR{}
 		}
 		args = append(args, object.ID)
 	} else {
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &monsterR{}
+				obj.R = &userR{}
 			}
 
 			for _, a := range args {
@@ -640,8 +671,8 @@ func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextEx
 	}
 
 	query := NewQuery(
-		qm.From(`monster_level_up_missions`),
-		qm.WhereIn(`monster_level_up_missions.monster_id in ?`, args...),
+		qm.From(`user_missions`),
+		qm.WhereIn(`user_missions.user_id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -649,22 +680,22 @@ func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextEx
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load monster_level_up_missions")
+		return errors.Wrap(err, "failed to eager load user_missions")
 	}
 
-	var resultSlice []*MonsterLevelUpMission
+	var resultSlice []*UserMission
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice monster_level_up_missions")
+		return errors.Wrap(err, "failed to bind eager loaded slice user_missions")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on monster_level_up_missions")
+		return errors.Wrap(err, "failed to close results in eager load on user_missions")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for monster_level_up_missions")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_missions")
 	}
 
-	if len(monsterLevelUpMissionAfterSelectHooks) != 0 {
+	if len(userMissionAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -672,24 +703,24 @@ func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextEx
 		}
 	}
 	if singular {
-		object.R.MonsterLevelUpMissions = resultSlice
+		object.R.UserMissions = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &monsterLevelUpMissionR{}
+				foreign.R = &userMissionR{}
 			}
-			foreign.R.Monster = object
+			foreign.R.User = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if local.ID == foreign.MonsterID {
-				local.R.MonsterLevelUpMissions = append(local.R.MonsterLevelUpMissions, foreign)
+			if local.ID == foreign.UserID {
+				local.R.UserMissions = append(local.R.UserMissions, foreign)
 				if foreign.R == nil {
-					foreign.R = &monsterLevelUpMissionR{}
+					foreign.R = &userMissionR{}
 				}
-				foreign.R.Monster = local
+				foreign.R.User = local
 				break
 			}
 		}
@@ -700,28 +731,28 @@ func (monsterL) LoadMonsterLevelUpMissions(ctx context.Context, e boil.ContextEx
 
 // LoadUserMonsterKillHistories allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (monsterL) LoadUserMonsterKillHistories(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMonster interface{}, mods queries.Applicator) error {
-	var slice []*Monster
-	var object *Monster
+func (userL) LoadUserMonsterKillHistories(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+	var slice []*User
+	var object *User
 
 	if singular {
 		var ok bool
-		object, ok = maybeMonster.(*Monster)
+		object, ok = maybeUser.(*User)
 		if !ok {
-			object = new(Monster)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeMonster)
+			object = new(User)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUser))
 			}
 		}
 	} else {
-		s, ok := maybeMonster.(*[]*Monster)
+		s, ok := maybeUser.(*[]*User)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeMonster)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUser))
 			}
 		}
 	}
@@ -729,14 +760,14 @@ func (monsterL) LoadUserMonsterKillHistories(ctx context.Context, e boil.Context
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &monsterR{}
+			object.R = &userR{}
 		}
 		args = append(args, object.ID)
 	} else {
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &monsterR{}
+				obj.R = &userR{}
 			}
 
 			for _, a := range args {
@@ -755,7 +786,7 @@ func (monsterL) LoadUserMonsterKillHistories(ctx context.Context, e boil.Context
 
 	query := NewQuery(
 		qm.From(`user_monster_kill_histories`),
-		qm.WhereIn(`user_monster_kill_histories.monster_id in ?`, args...),
+		qm.WhereIn(`user_monster_kill_histories.user_id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -791,19 +822,19 @@ func (monsterL) LoadUserMonsterKillHistories(ctx context.Context, e boil.Context
 			if foreign.R == nil {
 				foreign.R = &userMonsterKillHistoryR{}
 			}
-			foreign.R.Monster = object
+			foreign.R.User = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if local.ID == foreign.MonsterID {
+			if local.ID == foreign.UserID {
 				local.R.UserMonsterKillHistories = append(local.R.UserMonsterKillHistories, foreign)
 				if foreign.R == nil {
 					foreign.R = &userMonsterKillHistoryR{}
 				}
-				foreign.R.Monster = local
+				foreign.R.User = local
 				break
 			}
 		}
@@ -814,28 +845,28 @@ func (monsterL) LoadUserMonsterKillHistories(ctx context.Context, e boil.Context
 
 // LoadUserMonsters allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (monsterL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMonster interface{}, mods queries.Applicator) error {
-	var slice []*Monster
-	var object *Monster
+func (userL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+	var slice []*User
+	var object *User
 
 	if singular {
 		var ok bool
-		object, ok = maybeMonster.(*Monster)
+		object, ok = maybeUser.(*User)
 		if !ok {
-			object = new(Monster)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeMonster)
+			object = new(User)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUser))
 			}
 		}
 	} else {
-		s, ok := maybeMonster.(*[]*Monster)
+		s, ok := maybeUser.(*[]*User)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeMonster)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUser)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMonster))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUser))
 			}
 		}
 	}
@@ -843,14 +874,14 @@ func (monsterL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, si
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &monsterR{}
+			object.R = &userR{}
 		}
 		args = append(args, object.ID)
 	} else {
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &monsterR{}
+				obj.R = &userR{}
 			}
 
 			for _, a := range args {
@@ -869,7 +900,7 @@ func (monsterL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, si
 
 	query := NewQuery(
 		qm.From(`user_monsters`),
-		qm.WhereIn(`user_monsters.monster_id in ?`, args...),
+		qm.WhereIn(`user_monsters.user_id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -905,19 +936,19 @@ func (monsterL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, si
 			if foreign.R == nil {
 				foreign.R = &userMonsterR{}
 			}
-			foreign.R.Monster = object
+			foreign.R.User = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if local.ID == foreign.MonsterID {
+			if local.ID == foreign.UserID {
 				local.R.UserMonsters = append(local.R.UserMonsters, foreign)
 				if foreign.R == nil {
 					foreign.R = &userMonsterR{}
 				}
-				foreign.R.Monster = local
+				foreign.R.User = local
 				break
 			}
 		}
@@ -926,23 +957,23 @@ func (monsterL) LoadUserMonsters(ctx context.Context, e boil.ContextExecutor, si
 	return nil
 }
 
-// AddMonsterKillMissions adds the given related objects to the existing relationships
-// of the monster, optionally inserting them as new records.
-// Appends related to o.R.MonsterKillMissions.
-// Sets related.R.Monster appropriately.
-func (o *Monster) AddMonsterKillMissions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*MonsterKillMission) error {
+// AddUserItems adds the given related objects to the existing relationships
+// of the user, optionally inserting them as new records.
+// Appends related to o.R.UserItems.
+// Sets related.R.User appropriately.
+func (o *User) AddUserItems(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserItem) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"monster_kill_missions\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 1, []string{"monster_id"}),
-				strmangle.WhereClause("\"", "\"", 2, monsterKillMissionPrimaryKeyColumns),
+				"UPDATE \"user_items\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"user_id"}),
+				strmangle.WhereClause("\"", "\"", 2, userItemPrimaryKeyColumns),
 			)
 			values := []interface{}{o.ID, rel.ID}
 
@@ -955,47 +986,47 @@ func (o *Monster) AddMonsterKillMissions(ctx context.Context, exec boil.ContextE
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 		}
 	}
 
 	if o.R == nil {
-		o.R = &monsterR{
-			MonsterKillMissions: related,
+		o.R = &userR{
+			UserItems: related,
 		}
 	} else {
-		o.R.MonsterKillMissions = append(o.R.MonsterKillMissions, related...)
+		o.R.UserItems = append(o.R.UserItems, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &monsterKillMissionR{
-				Monster: o,
+			rel.R = &userItemR{
+				User: o,
 			}
 		} else {
-			rel.R.Monster = o
+			rel.R.User = o
 		}
 	}
 	return nil
 }
 
-// AddMonsterLevelUpMissions adds the given related objects to the existing relationships
-// of the monster, optionally inserting them as new records.
-// Appends related to o.R.MonsterLevelUpMissions.
-// Sets related.R.Monster appropriately.
-func (o *Monster) AddMonsterLevelUpMissions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*MonsterLevelUpMission) error {
+// AddUserMissions adds the given related objects to the existing relationships
+// of the user, optionally inserting them as new records.
+// Appends related to o.R.UserMissions.
+// Sets related.R.User appropriately.
+func (o *User) AddUserMissions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMission) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"monster_level_up_missions\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 1, []string{"monster_id"}),
-				strmangle.WhereClause("\"", "\"", 2, monsterLevelUpMissionPrimaryKeyColumns),
+				"UPDATE \"user_missions\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"user_id"}),
+				strmangle.WhereClause("\"", "\"", 2, userMissionPrimaryKeyColumns),
 			)
 			values := []interface{}{o.ID, rel.ID}
 
@@ -1008,46 +1039,46 @@ func (o *Monster) AddMonsterLevelUpMissions(ctx context.Context, exec boil.Conte
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 		}
 	}
 
 	if o.R == nil {
-		o.R = &monsterR{
-			MonsterLevelUpMissions: related,
+		o.R = &userR{
+			UserMissions: related,
 		}
 	} else {
-		o.R.MonsterLevelUpMissions = append(o.R.MonsterLevelUpMissions, related...)
+		o.R.UserMissions = append(o.R.UserMissions, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &monsterLevelUpMissionR{
-				Monster: o,
+			rel.R = &userMissionR{
+				User: o,
 			}
 		} else {
-			rel.R.Monster = o
+			rel.R.User = o
 		}
 	}
 	return nil
 }
 
 // AddUserMonsterKillHistories adds the given related objects to the existing relationships
-// of the monster, optionally inserting them as new records.
+// of the user, optionally inserting them as new records.
 // Appends related to o.R.UserMonsterKillHistories.
-// Sets related.R.Monster appropriately.
-func (o *Monster) AddUserMonsterKillHistories(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMonsterKillHistory) error {
+// Sets related.R.User appropriately.
+func (o *User) AddUserMonsterKillHistories(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMonsterKillHistory) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
 				"UPDATE \"user_monster_kill_histories\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 1, []string{"monster_id"}),
+				strmangle.SetParamNames("\"", "\"", 1, []string{"user_id"}),
 				strmangle.WhereClause("\"", "\"", 2, userMonsterKillHistoryPrimaryKeyColumns),
 			)
 			values := []interface{}{o.ID, rel.ID}
@@ -1061,12 +1092,12 @@ func (o *Monster) AddUserMonsterKillHistories(ctx context.Context, exec boil.Con
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 		}
 	}
 
 	if o.R == nil {
-		o.R = &monsterR{
+		o.R = &userR{
 			UserMonsterKillHistories: related,
 		}
 	} else {
@@ -1076,31 +1107,31 @@ func (o *Monster) AddUserMonsterKillHistories(ctx context.Context, exec boil.Con
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &userMonsterKillHistoryR{
-				Monster: o,
+				User: o,
 			}
 		} else {
-			rel.R.Monster = o
+			rel.R.User = o
 		}
 	}
 	return nil
 }
 
 // AddUserMonsters adds the given related objects to the existing relationships
-// of the monster, optionally inserting them as new records.
+// of the user, optionally inserting them as new records.
 // Appends related to o.R.UserMonsters.
-// Sets related.R.Monster appropriately.
-func (o *Monster) AddUserMonsters(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMonster) error {
+// Sets related.R.User appropriately.
+func (o *User) AddUserMonsters(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMonster) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
 				"UPDATE \"user_monsters\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 1, []string{"monster_id"}),
+				strmangle.SetParamNames("\"", "\"", 1, []string{"user_id"}),
 				strmangle.WhereClause("\"", "\"", 2, userMonsterPrimaryKeyColumns),
 			)
 			values := []interface{}{o.ID, rel.ID}
@@ -1114,12 +1145,12 @@ func (o *Monster) AddUserMonsters(ctx context.Context, exec boil.ContextExecutor
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			rel.MonsterID = o.ID
+			rel.UserID = o.ID
 		}
 	}
 
 	if o.R == nil {
-		o.R = &monsterR{
+		o.R = &userR{
 			UserMonsters: related,
 		}
 	} else {
@@ -1129,61 +1160,61 @@ func (o *Monster) AddUserMonsters(ctx context.Context, exec boil.ContextExecutor
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &userMonsterR{
-				Monster: o,
+				User: o,
 			}
 		} else {
-			rel.R.Monster = o
+			rel.R.User = o
 		}
 	}
 	return nil
 }
 
-// Monsters retrieves all the records using an executor.
-func Monsters(mods ...qm.QueryMod) monsterQuery {
-	mods = append(mods, qm.From("\"monsters\""))
+// Users retrieves all the records using an executor.
+func Users(mods ...qm.QueryMod) userQuery {
+	mods = append(mods, qm.From("\"users\""))
 	q := NewQuery(mods...)
 	if len(queries.GetSelect(q)) == 0 {
-		queries.SetSelect(q, []string{"\"monsters\".*"})
+		queries.SetSelect(q, []string{"\"users\".*"})
 	}
 
-	return monsterQuery{q}
+	return userQuery{q}
 }
 
-// FindMonster retrieves a single record by ID with an executor.
+// FindUser retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindMonster(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Monster, error) {
-	monsterObj := &Monster{}
+func FindUser(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*User, error) {
+	userObj := &User{}
 
 	sel := "*"
 	if len(selectCols) > 0 {
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"monsters\" where \"id\"=$1", sel,
+		"select %s from \"users\" where \"id\"=$1", sel,
 	)
 
 	q := queries.Raw(query, iD)
 
-	err := q.Bind(ctx, exec, monsterObj)
+	err := q.Bind(ctx, exec, userObj)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: unable to select from monsters")
+		return nil, errors.Wrap(err, "models: unable to select from users")
 	}
 
-	if err = monsterObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return monsterObj, err
+	if err = userObj.doAfterSelectHooks(ctx, exec); err != nil {
+		return userObj, err
 	}
 
-	return monsterObj, nil
+	return userObj, nil
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Monster) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no monsters provided for insertion")
+		return errors.New("models: no users provided for insertion")
 	}
 
 	var err error
@@ -1202,33 +1233,33 @@ func (o *Monster) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		return err
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(monsterColumnsWithDefault, o)
+	nzDefaults := queries.NonZeroDefaultSet(userColumnsWithDefault, o)
 
 	key := makeCacheKey(columns, nzDefaults)
-	monsterInsertCacheMut.RLock()
-	cache, cached := monsterInsertCache[key]
-	monsterInsertCacheMut.RUnlock()
+	userInsertCacheMut.RLock()
+	cache, cached := userInsertCache[key]
+	userInsertCacheMut.RUnlock()
 
 	if !cached {
 		wl, returnColumns := columns.InsertColumnSet(
-			monsterAllColumns,
-			monsterColumnsWithDefault,
-			monsterColumnsWithoutDefault,
+			userAllColumns,
+			userColumnsWithDefault,
+			userColumnsWithoutDefault,
 			nzDefaults,
 		)
 
-		cache.valueMapping, err = queries.BindMapping(monsterType, monsterMapping, wl)
+		cache.valueMapping, err = queries.BindMapping(userType, userMapping, wl)
 		if err != nil {
 			return err
 		}
-		cache.retMapping, err = queries.BindMapping(monsterType, monsterMapping, returnColumns)
+		cache.retMapping, err = queries.BindMapping(userType, userMapping, returnColumns)
 		if err != nil {
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO \"monsters\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO \"users\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO \"monsters\" %sDEFAULT VALUES%s"
+			cache.query = "INSERT INTO \"users\" %sDEFAULT VALUES%s"
 		}
 
 		var queryOutput, queryReturning string
@@ -1256,22 +1287,22 @@ func (o *Monster) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "models: unable to insert into monsters")
+		return errors.Wrap(err, "models: unable to insert into users")
 	}
 
 	if !cached {
-		monsterInsertCacheMut.Lock()
-		monsterInsertCache[key] = cache
-		monsterInsertCacheMut.Unlock()
+		userInsertCacheMut.Lock()
+		userInsertCache[key] = cache
+		userInsertCacheMut.Unlock()
 	}
 
 	return o.doAfterInsertHooks(ctx, exec)
 }
 
-// Update uses an executor to update the Monster.
+// Update uses an executor to update the User.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Monster) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1283,28 +1314,28 @@ func (o *Monster) Update(ctx context.Context, exec boil.ContextExecutor, columns
 		return 0, err
 	}
 	key := makeCacheKey(columns, nil)
-	monsterUpdateCacheMut.RLock()
-	cache, cached := monsterUpdateCache[key]
-	monsterUpdateCacheMut.RUnlock()
+	userUpdateCacheMut.RLock()
+	cache, cached := userUpdateCache[key]
+	userUpdateCacheMut.RUnlock()
 
 	if !cached {
 		wl := columns.UpdateColumnSet(
-			monsterAllColumns,
-			monsterPrimaryKeyColumns,
+			userAllColumns,
+			userPrimaryKeyColumns,
 		)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return 0, errors.New("models: unable to update monsters, could not build whitelist")
+			return 0, errors.New("models: unable to update users, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE \"monsters\" SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE \"users\" SET %s WHERE %s",
 			strmangle.SetParamNames("\"", "\"", 1, wl),
-			strmangle.WhereClause("\"", "\"", len(wl)+1, monsterPrimaryKeyColumns),
+			strmangle.WhereClause("\"", "\"", len(wl)+1, userPrimaryKeyColumns),
 		)
-		cache.valueMapping, err = queries.BindMapping(monsterType, monsterMapping, append(wl, monsterPrimaryKeyColumns...))
+		cache.valueMapping, err = queries.BindMapping(userType, userMapping, append(wl, userPrimaryKeyColumns...))
 		if err != nil {
 			return 0, err
 		}
@@ -1320,42 +1351,42 @@ func (o *Monster) Update(ctx context.Context, exec boil.ContextExecutor, columns
 	var result sql.Result
 	result, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update monsters row")
+		return 0, errors.Wrap(err, "models: unable to update users row")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by update for monsters")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by update for users")
 	}
 
 	if !cached {
-		monsterUpdateCacheMut.Lock()
-		monsterUpdateCache[key] = cache
-		monsterUpdateCacheMut.Unlock()
+		userUpdateCacheMut.Lock()
+		userUpdateCache[key] = cache
+		userUpdateCacheMut.Unlock()
 	}
 
 	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q monsterQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update all for monsters")
+		return 0, errors.Wrap(err, "models: unable to update all for users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for monsters")
+		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for users")
 	}
 
 	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o MonsterSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (o UserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1377,13 +1408,13 @@ func (o MonsterSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 
 	// Append all of the primary key values for each column
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), monsterPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE \"monsters\" SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE \"users\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, colNames),
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, monsterPrimaryKeyColumns, len(o)))
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, userPrimaryKeyColumns, len(o)))
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1392,21 +1423,21 @@ func (o MonsterSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update all in monster slice")
+		return 0, errors.Wrap(err, "models: unable to update all in user slice")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all monster")
+		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all user")
 	}
 	return rowsAff, nil
 }
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *Monster) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no monsters provided for upsert")
+		return errors.New("models: no users provided for upsert")
 	}
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
@@ -1421,7 +1452,7 @@ func (o *Monster) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		return err
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(monsterColumnsWithDefault, o)
+	nzDefaults := queries.NonZeroDefaultSet(userColumnsWithDefault, o)
 
 	// Build cache key in-line uglily - mysql vs psql problems
 	buf := strmangle.GetBuffer()
@@ -1451,42 +1482,42 @@ func (o *Monster) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 	key := buf.String()
 	strmangle.PutBuffer(buf)
 
-	monsterUpsertCacheMut.RLock()
-	cache, cached := monsterUpsertCache[key]
-	monsterUpsertCacheMut.RUnlock()
+	userUpsertCacheMut.RLock()
+	cache, cached := userUpsertCache[key]
+	userUpsertCacheMut.RUnlock()
 
 	var err error
 
 	if !cached {
 		insert, ret := insertColumns.InsertColumnSet(
-			monsterAllColumns,
-			monsterColumnsWithDefault,
-			monsterColumnsWithoutDefault,
+			userAllColumns,
+			userColumnsWithDefault,
+			userColumnsWithoutDefault,
 			nzDefaults,
 		)
 
 		update := updateColumns.UpdateColumnSet(
-			monsterAllColumns,
-			monsterPrimaryKeyColumns,
+			userAllColumns,
+			userPrimaryKeyColumns,
 		)
 
 		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert monsters, could not build update column list")
+			return errors.New("models: unable to upsert users, could not build update column list")
 		}
 
 		conflict := conflictColumns
 		if len(conflict) == 0 {
-			conflict = make([]string, len(monsterPrimaryKeyColumns))
-			copy(conflict, monsterPrimaryKeyColumns)
+			conflict = make([]string, len(userPrimaryKeyColumns))
+			copy(conflict, userPrimaryKeyColumns)
 		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"monsters\"", updateOnConflict, ret, update, conflict, insert)
+		cache.query = buildUpsertQueryPostgres(dialect, "\"users\"", updateOnConflict, ret, update, conflict, insert)
 
-		cache.valueMapping, err = queries.BindMapping(monsterType, monsterMapping, insert)
+		cache.valueMapping, err = queries.BindMapping(userType, userMapping, insert)
 		if err != nil {
 			return err
 		}
 		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(monsterType, monsterMapping, ret)
+			cache.retMapping, err = queries.BindMapping(userType, userMapping, ret)
 			if err != nil {
 				return err
 			}
@@ -1514,31 +1545,31 @@ func (o *Monster) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		_, err = exec.ExecContext(ctx, cache.query, vals...)
 	}
 	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert monsters")
+		return errors.Wrap(err, "models: unable to upsert users")
 	}
 
 	if !cached {
-		monsterUpsertCacheMut.Lock()
-		monsterUpsertCache[key] = cache
-		monsterUpsertCacheMut.Unlock()
+		userUpsertCacheMut.Lock()
+		userUpsertCache[key] = cache
+		userUpsertCacheMut.Unlock()
 	}
 
 	return o.doAfterUpsertHooks(ctx, exec)
 }
 
-// Delete deletes a single Monster record with an executor.
+// Delete deletes a single User record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (o *Monster) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
-		return 0, errors.New("models: no Monster provided for delete")
+		return 0, errors.New("models: no User provided for delete")
 	}
 
 	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
 		return 0, err
 	}
 
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), monsterPrimaryKeyMapping)
-	sql := "DELETE FROM \"monsters\" WHERE \"id\"=$1"
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userPrimaryKeyMapping)
+	sql := "DELETE FROM \"users\" WHERE \"id\"=$1"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1547,12 +1578,12 @@ func (o *Monster) Delete(ctx context.Context, exec boil.ContextExecutor) (int64,
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from monsters")
+		return 0, errors.Wrap(err, "models: unable to delete from users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for monsters")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for users")
 	}
 
 	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
@@ -1563,33 +1594,33 @@ func (o *Monster) Delete(ctx context.Context, exec boil.ContextExecutor) (int64,
 }
 
 // DeleteAll deletes all matching rows.
-func (q monsterQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
-		return 0, errors.New("models: no monsterQuery provided for delete all")
+		return 0, errors.New("models: no userQuery provided for delete all")
 	}
 
 	queries.SetDelete(q.Query)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from monsters")
+		return 0, errors.Wrap(err, "models: unable to delete all from users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for monsters")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
 	}
 
 	return rowsAff, nil
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (o MonsterSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
 
-	if len(monsterBeforeDeleteHooks) != 0 {
+	if len(userBeforeDeleteHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
 				return 0, err
@@ -1599,12 +1630,12 @@ func (o MonsterSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 
 	var args []interface{}
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), monsterPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "DELETE FROM \"monsters\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, monsterPrimaryKeyColumns, len(o))
+	sql := "DELETE FROM \"users\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, userPrimaryKeyColumns, len(o))
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1613,15 +1644,15 @@ func (o MonsterSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from monster slice")
+		return 0, errors.Wrap(err, "models: unable to delete all from user slice")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for monsters")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
 	}
 
-	if len(monsterAfterDeleteHooks) != 0 {
+	if len(userAfterDeleteHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
 				return 0, err
@@ -1634,8 +1665,8 @@ func (o MonsterSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (o *Monster) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindMonster(ctx, exec, o.ID)
+func (o *User) Reload(ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindUser(ctx, exec, o.ID)
 	if err != nil {
 		return err
 	}
@@ -1646,26 +1677,26 @@ func (o *Monster) Reload(ctx context.Context, exec boil.ContextExecutor) error {
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (o *MonsterSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}
 
-	slice := MonsterSlice{}
+	slice := UserSlice{}
 	var args []interface{}
 	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), monsterPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT \"monsters\".* FROM \"monsters\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, monsterPrimaryKeyColumns, len(*o))
+	sql := "SELECT \"users\".* FROM \"users\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, userPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
 
 	err := q.Bind(ctx, exec, &slice)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in MonsterSlice")
+		return errors.Wrap(err, "models: unable to reload all in UserSlice")
 	}
 
 	*o = slice
@@ -1673,10 +1704,10 @@ func (o *MonsterSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor)
 	return nil
 }
 
-// MonsterExists checks if the Monster row exists.
-func MonsterExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
+// UserExists checks if the User row exists.
+func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"monsters\" where \"id\"=$1 limit 1)"
+	sql := "select exists(select 1 from \"users\" where \"id\"=$1 limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1687,13 +1718,13 @@ func MonsterExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bo
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if monsters exists")
+		return false, errors.Wrap(err, "models: unable to check if users exists")
 	}
 
 	return exists, nil
 }
 
-// Exists checks if the Monster row exists.
-func (o *Monster) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
-	return MonsterExists(ctx, exec, o.ID)
+// Exists checks if the User row exists.
+func (o *User) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+	return UserExists(ctx, exec, o.ID)
 }
