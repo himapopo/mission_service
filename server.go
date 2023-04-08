@@ -22,6 +22,7 @@ func main() {
 	ur := database.NewuUserRepostitory(dbUtil)
 	lmr := database.NewLoginMissionRepostitory(dbUtil)
 	umr := database.NewUserMissionRepostitory(dbUtil)
+	umpr := database.NewUserMissionProgressRepostitory(dbUtil)
 	uir := database.NewUserItemRepostitory(dbUtil)
 	ccmr := database.NewCoinCountMissionRepostitory(dbUtil)
 	mkmr := database.NewMonsterKillMissionRepostitory(dbUtil)
@@ -34,12 +35,16 @@ func main() {
 	)
 	wmu := mission.NewWeeklyMissionUsecase(
 		mkkmr,
+		ur,
 		umr,
+		umpr,
 		mru,
 	)
 	nmu := mission.NewNormailMissionUsecase(
 		ccmr,
+		ur,
 		umr,
+		umpr,
 		mkmr,
 		mru,
 		wmu,

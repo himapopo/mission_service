@@ -7,7 +7,7 @@ import (
 )
 
 type MissionRewardUsecase interface {
-	ObtainRewards(context.Context, *models.User, *models.Mission) error
+	ObtainRewards(context.Context, int64, *models.Mission) error
 }
 
 type missionRewardUsecase struct {
@@ -25,9 +25,13 @@ func NewMissionRewardUsecase(
 	}
 }
 
-func (u missionRewardUsecase) ObtainRewards(ctx context.Context, user *models.User, mission *models.Mission) error {
+func (u missionRewardUsecase) ObtainRewards(ctx context.Context, userID int64, mission *models.Mission) error {
 	rewardCoins := mission.R.MissionRewardCoins
 	rewardItems := mission.R.MissionRewardItems
+	user, err := u.userRepository.Fetch(ctx, userID)
+	if err != nil {
+		return err
+	}
 
 	// コイン報酬加算
 	if len(rewardCoins) != 0 {

@@ -18,7 +18,7 @@ func NewMonsterKillCountMissionRepostitory(dbUtil dbUtil) monsterKillCountMissio
 	}
 }
 
-func (r monsterKillCountMissionRepostitory) FetchNotCompletedByUserIDAndKillCount(ctx context.Context, userID, killCount int64) ([]*models.MonsterKillCountMission, error) {
+func (r monsterKillCountMissionRepostitory) FetchWeeklyByUserID(ctx context.Context, userID int64) ([]*models.MonsterKillCountMission, error) {
 	results, err := models.MonsterKillCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
@@ -37,9 +37,8 @@ func (r monsterKillCountMissionRepostitory) FetchNotCompletedByUserIDAndKillCoun
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
-		models.MonsterKillCountMissionWhere.KillCount.LTE(killCount),
+		models.MissionWhere.MissionType.EQ("weekly"),
 		models.UserMissionWhere.UserID.EQ(userID),
-		models.UserMissionWhere.CompletedAt.IsNull(),
 		qm.Load(
 			qm.Rels(
 				models.MonsterKillCountMissionRels.Mission,
@@ -52,6 +51,13 @@ func (r monsterKillCountMissionRepostitory) FetchNotCompletedByUserIDAndKillCoun
 				models.MonsterKillCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.User,
+			),
+		),
+		qm.Load(
+			qm.Rels(
+				models.MonsterKillCountMissionRels.Mission,
+				models.MissionRels.UserMissions,
+				models.UserMissionRels.UserMissionProgresses,
 			),
 		),
 		qm.Load(

@@ -9,7 +9,7 @@ import (
 )
 
 type NormalMissionUsecase interface {
-	MonsterKill(context.Context, dto.MonsterKillMissionRequest) (int, error)
+	MonsterKill(context.Context, dto.MonsterKillRequest) (int, error)
 }
 
 type normalMissionController struct {
@@ -25,7 +25,7 @@ func NewNormalMissionController(
 }
 
 func (dmc normalMissionController) MonsterKill(ctx *gin.Context) {
-	var params dto.MonsterKillMissionRequest
+	var params dto.MonsterKillRequest
 	ctx.ShouldBindJSON(&params)
 	status := http.StatusOK
 	message := ""

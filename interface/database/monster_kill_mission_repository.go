@@ -57,6 +57,13 @@ func (r monsterKillMissionRepostitory) FetchNotCompletedByUserIDAndMonsterID(ctx
 		qm.Load(
 			qm.Rels(
 				models.MonsterKillMissionRels.Mission,
+				models.MissionRels.UserMissions,
+				models.UserMissionRels.UserMissionProgresses,
+			),
+		),
+		qm.Load(
+			qm.Rels(
+				models.MonsterKillMissionRels.Mission,
 				models.MissionRels.MissionRewardCoins,
 			),
 		),

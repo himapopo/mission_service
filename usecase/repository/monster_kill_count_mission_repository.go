@@ -6,5 +6,5 @@ import (
 )
 
 type MonsterKillCountMissionRepository interface {
-	FetchNotCompletedByUserIDAndKillCount(context.Context, int64, int64) ([]*models.MonsterKillCountMission, error)
+	FetchWeeklyByUserID(context.Context, int64) ([]*models.MonsterKillCountMission, error)
 }

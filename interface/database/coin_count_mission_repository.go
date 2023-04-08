@@ -18,7 +18,7 @@ func NewCoinCountMissionRepostitory(dbUtil dbUtil) coinCountMissionRepostitory {
 	}
 }
 
-func (r coinCountMissionRepostitory) FetchNotCompletedByUserIDAndCoinCount(ctx context.Context, userID, coinCount int64) ([]*models.CoinCountMission, error) {
+func (r coinCountMissionRepostitory) FetchNotCompletedByUserID(ctx context.Context, userID int64) ([]*models.CoinCountMission, error) {
 	results, err := models.CoinCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
@@ -37,7 +37,6 @@ func (r coinCountMissionRepostitory) FetchNotCompletedByUserIDAndCoinCount(ctx c
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
-		models.CoinCountMissionWhere.CoinCount.LTE(coinCount),
 		models.UserMissionWhere.UserID.EQ(userID),
 		models.UserMissionWhere.CompletedAt.IsNull(),
 		qm.Load(
@@ -52,6 +51,13 @@ func (r coinCountMissionRepostitory) FetchNotCompletedByUserIDAndCoinCount(ctx c
 				models.CoinCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.User,
+			),
+		),
+		qm.Load(
+			qm.Rels(
+				models.CoinCountMissionRels.Mission,
+				models.MissionRels.UserMissions,
+				models.UserMissionRels.UserMissionProgresses,
 			),
 		),
 		qm.Load(

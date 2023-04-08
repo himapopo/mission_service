@@ -36,7 +36,7 @@ func NewDailyMissionUsecase(
 	}
 }
 
-func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginMissionRequest) (int, error) {
+func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginRequest) (int, error) {
 	lm, err := u.loginMissionRepository.FetchByUserIDAndLoginCount(ctx, params.UserID, 1)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -46,7 +46,7 @@ func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginMissionR
 
 		if lm != nil &&
 			len(lm.R.Mission.R.UserMissions) != 0 &&
-			(lm.R.Mission.R.UserMissions[0].CompletedAt.Time.Before(timeutils.DailyMissionResetTime())) {
+			(lm.R.Mission.R.UserMissions[0].CompletedAt.Time.Before(timeutils.DailyMissionResetTime(params.RequestedAt))) {
 
 			// ログインミッション達成日時更新
 			um := lm.R.Mission.R.UserMissions[0]
@@ -58,14 +58,13 @@ func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginMissionR
 				return err
 			}
 
-			user := um.R.User
 			// ログインミッション報酬獲得
-			if err := u.missionRewardUsecase.ObtainRewards(ctx, user, lm.R.Mission); err != nil {
+			if err := u.missionRewardUsecase.ObtainRewards(ctx, params.UserID, lm.R.Mission); err != nil {
 				return err
 			}
 
 			// コイン獲得枚数ミッション達成チェック
-			if err := u.normalMissionUsecase.CheckCoinCountMission(ctx, user, params.RequestedAt); err != nil {
+			if err := u.normalMissionUsecase.CheckCoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
 				return err
 			}
 
