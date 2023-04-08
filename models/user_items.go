@@ -27,7 +27,9 @@ type UserItem struct {
 	// ユーザーID
 	UserID int64 `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	// アイテムID
-	ItemID    int64     `boil:"item_id" json:"item_id" toml:"item_id" yaml:"item_id"`
+	ItemID int64 `boil:"item_id" json:"item_id" toml:"item_id" yaml:"item_id"`
+	// 所有数
+	Count     int       `boil:"count" json:"count" toml:"count" yaml:"count"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
@@ -39,12 +41,14 @@ var UserItemColumns = struct {
 	ID        string
 	UserID    string
 	ItemID    string
+	Count     string
 	UpdatedAt string
 	CreatedAt string
 }{
 	ID:        "id",
 	UserID:    "user_id",
 	ItemID:    "item_id",
+	Count:     "count",
 	UpdatedAt: "updated_at",
 	CreatedAt: "created_at",
 }
@@ -53,12 +57,14 @@ var UserItemTableColumns = struct {
 	ID        string
 	UserID    string
 	ItemID    string
+	Count     string
 	UpdatedAt string
 	CreatedAt string
 }{
 	ID:        "user_items.id",
 	UserID:    "user_items.user_id",
 	ItemID:    "user_items.item_id",
+	Count:     "user_items.count",
 	UpdatedAt: "user_items.updated_at",
 	CreatedAt: "user_items.created_at",
 }
@@ -69,12 +75,14 @@ var UserItemWhere = struct {
 	ID        whereHelperint64
 	UserID    whereHelperint64
 	ItemID    whereHelperint64
+	Count     whereHelperint
 	UpdatedAt whereHelpertime_Time
 	CreatedAt whereHelpertime_Time
 }{
 	ID:        whereHelperint64{field: "\"user_items\".\"id\""},
 	UserID:    whereHelperint64{field: "\"user_items\".\"user_id\""},
 	ItemID:    whereHelperint64{field: "\"user_items\".\"item_id\""},
+	Count:     whereHelperint{field: "\"user_items\".\"count\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"user_items\".\"updated_at\""},
 	CreatedAt: whereHelpertime_Time{field: "\"user_items\".\"created_at\""},
 }
@@ -117,8 +125,8 @@ func (r *userItemR) GetUser() *User {
 type userItemL struct{}
 
 var (
-	userItemAllColumns            = []string{"id", "user_id", "item_id", "updated_at", "created_at"}
-	userItemColumnsWithoutDefault = []string{"user_id", "item_id"}
+	userItemAllColumns            = []string{"id", "user_id", "item_id", "count", "updated_at", "created_at"}
+	userItemColumnsWithoutDefault = []string{"user_id", "item_id", "count"}
 	userItemColumnsWithDefault    = []string{"id", "updated_at", "created_at"}
 	userItemPrimaryKeyColumns     = []string{"id"}
 	userItemGeneratedColumns      = []string{}
