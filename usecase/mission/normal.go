@@ -14,7 +14,7 @@ import (
 
 type NormalMissionUsecase interface {
 	CheckCoinCountMission(context.Context, *models.User, time.Time) error
-	MonsterKillMission(ctx context.Context, params dto.MosterKillRequest) (int, error)
+	MonsterKill(ctx context.Context, params dto.MonsterKillMissionRequest) (int, error)
 }
 
 type normalMissionUsecase struct {
@@ -41,7 +41,7 @@ func NewNormailMissionUsecase(
 	}
 }
 
-func (u normalMissionUsecase) MonsterKillMission(ctx context.Context, params dto.MosterKillRequest) (int, error) {
+func (u normalMissionUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillMissionRequest) (int, error) {
 
 	// 前回ミッション達成日時が今日の04:00以前の場合はミッション報酬獲得
 	if err := db.InTx(ctx, func(ctx context.Context) error {

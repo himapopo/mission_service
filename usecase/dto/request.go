@@ -7,7 +7,7 @@ type LoginMissionRequest struct {
 	RequestedAt time.Time `json:"requested_at"`
 }
 
-type MosterKillRequest struct {
+type MonsterKillMissionRequest struct {
 	UserID      int64     `json:"user_id"`
 	MyMonsterID      int64     `json:"my_monster_id"`
 	OpponentMonsterID      int64     `json:"opponent_monster_id"`

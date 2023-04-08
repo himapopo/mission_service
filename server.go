@@ -54,9 +54,10 @@ func main() {
 
 	// controller
 	dmc := controller.NewDailyMissionController(dmu)
+	nmc := controller.NewNormalMissionController(nmu)
 
 	// router
-	router := router.NewRouter(e, dmc)
+	router := router.NewRouter(e, dmc, nmc)
 
 	router.Routing()
 
