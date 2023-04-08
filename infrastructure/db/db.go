@@ -12,6 +12,8 @@ import (
 
 var DB *sql.DB
 
+var TxKey struct{}
+
 type db struct {
 	db *sql.DB
 }
@@ -36,6 +38,15 @@ func NewDB() db {
 	}
 }
 
+func (d db) GetDao(ctx context.Context) boil.ContextExecutor {
+	tx, ok := ctx.Value(TxKey).(*sql.Tx)
+	if ok {
+		return tx
+	}
+
+	return d.db
+}
+
 func (d db) Error(err error) error {
 	if err == nil || errors.Is(sql.ErrNoRows, err) {
 		return nil
@@ -43,18 +54,20 @@ func (d db) Error(err error) error {
 	return err
 }
 
-func InTx(ctx context.Context, f func(c context.Context) (interface{}, error)) (interface{}, error) {
+func InTx(ctx context.Context, f func(context.Context) error) error {
 	tx, err := boil.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	result, err := f(ctx)
-	if err != nil {
+
+	ctx = context.WithValue(ctx, TxKey, tx)
+
+	if err := f(ctx); err != nil {
 		tx.Rollback()
-		return nil, err
+		return err
 	}
 
 	tx.Commit()
 
-	return result, nil
+	return nil
 }

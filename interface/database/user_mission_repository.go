@@ -19,7 +19,7 @@ func NewUserMissionRepostitory(dbUtil dbUtil) userMissionRepostitory {
 }
 
 func (r userMissionRepostitory) Update(ctx context.Context, m *models.UserMission, updateColumns []string) error {
-	cnt, err := m.Update(ctx, boil.GetContextDB(), boil.Whitelist(updateColumns...))
+	cnt, err := m.Update(ctx, r.GetDao(ctx), boil.Whitelist(updateColumns...))
 	if cnt == 0 {
 		return fmt.Errorf("user mission update cnt = %d", cnt)
 	}

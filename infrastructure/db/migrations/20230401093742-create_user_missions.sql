@@ -7,6 +7,7 @@ create table if not exists user_missions(
   completed_at timestamp with time zone null,
   updated_at timestamp with time zone not null default now(),
   created_at timestamp with time zone not null default now(),
+  unique(user_id, mission_id),
   primary key(id)
 );
 

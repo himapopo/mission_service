@@ -8,24 +8,24 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type loginMissionRepostitory struct {
+type coinCountMissionRepostitory struct {
 	dbUtil
 }
 
-func NewLoginMissionRepostitory(dbUtil dbUtil) loginMissionRepostitory {
-	return loginMissionRepostitory{
+func NewCoinCountMissionRepostitory(dbUtil dbUtil) coinCountMissionRepostitory {
+	return coinCountMissionRepostitory{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r loginMissionRepostitory) FetchByUserIDAndLoginCount(ctx context.Context, userID, loginCount int64) (*models.LoginMission, error) {
-	result, err := models.LoginMissions(
+func (r coinCountMissionRepostitory) FetchNotCompletedByUserIDAndCoinCount(ctx context.Context, userID, coinCount int64) ([]*models.CoinCountMission, error) {
+	results, err := models.CoinCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
 			models.TableNames.Missions,
 			models.MissionColumns.ID,
-			models.TableNames.LoginMissions,
-			models.LoginMissionColumns.MissionID,
+			models.TableNames.CoinCountMissions,
+			models.CoinCountMissionColumns.MissionID,
 		),
 		),
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
@@ -37,34 +37,35 @@ func (r loginMissionRepostitory) FetchByUserIDAndLoginCount(ctx context.Context,
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
-		models.LoginMissionWhere.LoginCount.EQ(loginCount),
+		models.CoinCountMissionWhere.CoinCount.LTE(coinCount),
 		models.UserMissionWhere.UserID.EQ(userID),
+		models.UserMissionWhere.CompletedAt.IsNull(),
 		qm.Load(
 			qm.Rels(
-				models.LoginMissionRels.Mission,
+				models.CoinCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 			),
 			models.UserMissionWhere.UserID.EQ(userID),
 		),
 		qm.Load(
 			qm.Rels(
-				models.LoginMissionRels.Mission,
+				models.CoinCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.User,
 			),
 		),
 		qm.Load(
 			qm.Rels(
-				models.LoginMissionRels.Mission,
+				models.CoinCountMissionRels.Mission,
 				models.MissionRels.MissionRewardCoins,
 			),
 		),
 		qm.Load(
 			qm.Rels(
-				models.LoginMissionRels.Mission,
+				models.CoinCountMissionRels.Mission,
 				models.MissionRels.MissionRewardItems,
 			),
 		),
-	).One(ctx, r.GetDao(ctx))
-	return result, r.Error(err)
+	).All(ctx, r.GetDao(ctx))
+	return results, r.Error(err)
 }

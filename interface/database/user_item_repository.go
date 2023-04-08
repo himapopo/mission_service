@@ -22,16 +22,16 @@ func (r userItemRepostitory) FetchByItemIDAndUserID(ctx context.Context, userID,
 	result, err := models.UserItems(
 		models.UserItemWhere.UserID.EQ(userID),
 		models.UserItemWhere.ItemID.EQ(itemID),
-	).One(ctx, boil.GetContextDB())
+	).One(ctx, r.GetDao(ctx))
 	return result, r.Error(err)
 }
 
 func (r userItemRepostitory) Create(ctx context.Context, m *models.UserItem) error {
-	return r.Error(m.Insert(ctx, boil.GetContextDB(), boil.Infer()))
+	return r.Error(m.Insert(ctx, r.GetDao(ctx), boil.Infer()))
 }
 
 func (r userItemRepostitory) Update(ctx context.Context, m *models.UserItem, updateColumns []string) error {
-	cnt, err := m.Update(ctx, boil.GetContextDB(), boil.Whitelist(updateColumns...))
+	cnt, err := m.Update(ctx, r.GetDao(ctx), boil.Whitelist(updateColumns...))
 	if cnt == 0 {
 		return fmt.Errorf("user item update cnt = %d", cnt)
 	}
