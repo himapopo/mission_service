@@ -29,85 +29,70 @@ type MonsterLevelUpMission struct {
 	// 対象モンスターID
 	MonsterID int64 `boil:"monster_id" json:"monster_id" toml:"monster_id" yaml:"monster_id"`
 	// 対象のレベル
-	Level     int       `boil:"level" json:"level" toml:"level" yaml:"level"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	Level int `boil:"level" json:"level" toml:"level" yaml:"level"`
+	// レベルアップ必要数
+	MonsterCount int64     `boil:"monster_count" json:"monster_count" toml:"monster_count" yaml:"monster_count"`
+	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
 	R *monsterLevelUpMissionR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L monsterLevelUpMissionL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var MonsterLevelUpMissionColumns = struct {
-	ID        string
-	MissionID string
-	MonsterID string
-	Level     string
-	UpdatedAt string
-	CreatedAt string
+	ID           string
+	MissionID    string
+	MonsterID    string
+	Level        string
+	MonsterCount string
+	UpdatedAt    string
+	CreatedAt    string
 }{
-	ID:        "id",
-	MissionID: "mission_id",
-	MonsterID: "monster_id",
-	Level:     "level",
-	UpdatedAt: "updated_at",
-	CreatedAt: "created_at",
+	ID:           "id",
+	MissionID:    "mission_id",
+	MonsterID:    "monster_id",
+	Level:        "level",
+	MonsterCount: "monster_count",
+	UpdatedAt:    "updated_at",
+	CreatedAt:    "created_at",
 }
 
 var MonsterLevelUpMissionTableColumns = struct {
-	ID        string
-	MissionID string
-	MonsterID string
-	Level     string
-	UpdatedAt string
-	CreatedAt string
+	ID           string
+	MissionID    string
+	MonsterID    string
+	Level        string
+	MonsterCount string
+	UpdatedAt    string
+	CreatedAt    string
 }{
-	ID:        "monster_level_up_missions.id",
-	MissionID: "monster_level_up_missions.mission_id",
-	MonsterID: "monster_level_up_missions.monster_id",
-	Level:     "monster_level_up_missions.level",
-	UpdatedAt: "monster_level_up_missions.updated_at",
-	CreatedAt: "monster_level_up_missions.created_at",
+	ID:           "monster_level_up_missions.id",
+	MissionID:    "monster_level_up_missions.mission_id",
+	MonsterID:    "monster_level_up_missions.monster_id",
+	Level:        "monster_level_up_missions.level",
+	MonsterCount: "monster_level_up_missions.monster_count",
+	UpdatedAt:    "monster_level_up_missions.updated_at",
+	CreatedAt:    "monster_level_up_missions.created_at",
 }
 
 // Generated where
 
-type whereHelperint struct{ field string }
-
-func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint) IN(slice []int) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperint) NIN(slice []int) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
 var MonsterLevelUpMissionWhere = struct {
-	ID        whereHelperint64
-	MissionID whereHelperint64
-	MonsterID whereHelperint64
-	Level     whereHelperint
-	UpdatedAt whereHelpertime_Time
-	CreatedAt whereHelpertime_Time
+	ID           whereHelperint64
+	MissionID    whereHelperint64
+	MonsterID    whereHelperint64
+	Level        whereHelperint
+	MonsterCount whereHelperint64
+	UpdatedAt    whereHelpertime_Time
+	CreatedAt    whereHelpertime_Time
 }{
-	ID:        whereHelperint64{field: "\"monster_level_up_missions\".\"id\""},
-	MissionID: whereHelperint64{field: "\"monster_level_up_missions\".\"mission_id\""},
-	MonsterID: whereHelperint64{field: "\"monster_level_up_missions\".\"monster_id\""},
-	Level:     whereHelperint{field: "\"monster_level_up_missions\".\"level\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"monster_level_up_missions\".\"updated_at\""},
-	CreatedAt: whereHelpertime_Time{field: "\"monster_level_up_missions\".\"created_at\""},
+	ID:           whereHelperint64{field: "\"monster_level_up_missions\".\"id\""},
+	MissionID:    whereHelperint64{field: "\"monster_level_up_missions\".\"mission_id\""},
+	MonsterID:    whereHelperint64{field: "\"monster_level_up_missions\".\"monster_id\""},
+	Level:        whereHelperint{field: "\"monster_level_up_missions\".\"level\""},
+	MonsterCount: whereHelperint64{field: "\"monster_level_up_missions\".\"monster_count\""},
+	UpdatedAt:    whereHelpertime_Time{field: "\"monster_level_up_missions\".\"updated_at\""},
+	CreatedAt:    whereHelpertime_Time{field: "\"monster_level_up_missions\".\"created_at\""},
 }
 
 // MonsterLevelUpMissionRels is where relationship names are stored.
@@ -148,8 +133,8 @@ func (r *monsterLevelUpMissionR) GetMonster() *Monster {
 type monsterLevelUpMissionL struct{}
 
 var (
-	monsterLevelUpMissionAllColumns            = []string{"id", "mission_id", "monster_id", "level", "updated_at", "created_at"}
-	monsterLevelUpMissionColumnsWithoutDefault = []string{"mission_id", "monster_id", "level"}
+	monsterLevelUpMissionAllColumns            = []string{"id", "mission_id", "monster_id", "level", "monster_count", "updated_at", "created_at"}
+	monsterLevelUpMissionColumnsWithoutDefault = []string{"mission_id", "monster_id", "level", "monster_count"}
 	monsterLevelUpMissionColumnsWithDefault    = []string{"id", "updated_at", "created_at"}
 	monsterLevelUpMissionPrimaryKeyColumns     = []string{"id"}
 	monsterLevelUpMissionGeneratedColumns      = []string{}

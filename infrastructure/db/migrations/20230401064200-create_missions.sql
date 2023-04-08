@@ -3,6 +3,7 @@
 create table if not exists missions(
   id bigserial not null,
   name text not null,
+  mission_type text not null default 'normal',
   is_deleted boolean not null default false,
   updated_at timestamp with time zone not null default now(),
   created_at timestamp with time zone not null default now(),
@@ -12,6 +13,7 @@ create table if not exists missions(
 
 comment on table missions is 'ミッション';
 comment on column missions.name is '名前';
+comment on column missions.mission_type is 'ミッションの種類';
 comment on column missions.is_deleted is '削除フラグ';
 -- +migrate Down
 drop table if exists missions;

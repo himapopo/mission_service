@@ -17,7 +17,7 @@ type dailyMissionUsecase struct {
 	loginMissionRepository repository.LoginMissionRepository
 	userMissionRepository  repository.UserMissionRepository
 	missionRewardUsecase   MissionRewardUsecase
-	normailMissionUsecase  NormailMissionUsecase
+	normalMissionUsecase   NormalMissionUsecase
 }
 
 func NewDailyMissionUsecase(
@@ -25,14 +25,14 @@ func NewDailyMissionUsecase(
 	loginMissionRepository repository.LoginMissionRepository,
 	userMissionRepository repository.UserMissionRepository,
 	missionRewardUsecase MissionRewardUsecase,
-	normailMissionUsecase NormailMissionUsecase,
+	normailMissionUsecase NormalMissionUsecase,
 ) dailyMissionUsecase {
 	return dailyMissionUsecase{
 		userRepository:         userRepository,
 		loginMissionRepository: loginMissionRepository,
 		userMissionRepository:  userMissionRepository,
 		missionRewardUsecase:   missionRewardUsecase,
-		normailMissionUsecase:  normailMissionUsecase,
+		normalMissionUsecase:   normailMissionUsecase,
 	}
 }
 
@@ -65,7 +65,7 @@ func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginMissionR
 			}
 
 			// コイン獲得枚数ミッション達成チェック
-			if err := u.normailMissionUsecase.CheckCoinCountMission(ctx, user, params.RequestedAt); err != nil {
+			if err := u.normalMissionUsecase.CheckCoinCountMission(ctx, user, params.RequestedAt); err != nil {
 				return err
 			}
 
