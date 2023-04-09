@@ -2,19 +2,17 @@ package mission
 
 import (
 	"context"
-	"mission_service/infrastructure/db"
 	"mission_service/models"
-	"mission_service/usecase/dto"
 	"mission_service/usecase/repository"
-	"net/http"
 	"time"
 
 	"github.com/volatiletech/null/v8"
 )
 
 type NormalMissionUsecase interface {
-	CheckCoinCountMission(context.Context, int64, time.Time) error
-	MonsterKill(ctx context.Context, params dto.MonsterKillRequest) (int, error)
+	CoinCountMission(context.Context, int64, time.Time) error
+	MonsterKillMission(context.Context, int64, int64, int64, time.Time) error
+	MonsterLevelUpMission(context.Context, int64, int64, int64, time.Time) error
 }
 
 type normalMissionUsecase struct {
@@ -47,64 +45,61 @@ func NewNormailMissionUsecase(
 	}
 }
 
+// 特定のモンスターレベルアップ
+func (u normalMissionUsecase) MonsterLevelUpMission(ctx context.Context, userID, myMonsterID, amount int64, requestedAt time.Time) error {
+
+	// 	// 一定レベル以上のモンスター獲得ミッション達成チェック
+
+	// 	// コイン獲得枚数ミッション達成チェック
+	// 	if err := u.CheckCoinCountMission(ctx, userID, requestedAt); err != nil {
+	// 		return err
+	// 	}
+
+	return nil
+}
+
 // 特定のモンスター討伐
-func (u normalMissionUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillRequest) (int, error) {
-	mkm, err := u.monsterKillMissionRepository.FetchNotCompletedByUserIDAndMonsterID(ctx, params.UserID, params.OpponentMonsterID)
+func (u normalMissionUsecase) MonsterKillMission(ctx context.Context, userID, myMonsterID, opponentMonsterID int64, requestedAt time.Time) error {
+	mkm, err := u.monsterKillMissionRepository.FetchNotCompletedByUserIDAndMonsterID(ctx, userID, opponentMonsterID)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return err
 	}
-	if err := db.InTx(ctx, func(ctx context.Context) error {
-		if mkm != nil {
-			ump := mkm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
-			ump.ProgressValue += 1
-			ump.LastProgressUpdatedAt = params.RequestedAt
-			// ミッションの進捗更新
-			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
-				models.UserMissionProgressColumns.ProgressValue,
-				models.UserMissionProgressColumns.LastProgressUpdatedAt,
-				models.UserMissionProgressColumns.UpdatedAt,
+	if mkm != nil {
+		ump := mkm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
+		ump.ProgressValue += 1
+		ump.LastProgressUpdatedAt = requestedAt
+		// ミッションの進捗更新
+		if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
+			models.UserMissionProgressColumns.ProgressValue,
+			models.UserMissionProgressColumns.LastProgressUpdatedAt,
+			models.UserMissionProgressColumns.UpdatedAt,
+		}); err != nil {
+			return err
+		}
+
+		// ミッション達成時
+		if mkm.MonsterCount <= ump.ProgressValue {
+			// ミッション達成日時更新
+			um := mkm.R.Mission.R.UserMissions[0]
+			um.CompletedAt = null.TimeFrom(requestedAt)
+			if err := u.userMissionRepository.Update(ctx, um, []string{
+				models.UserMissionColumns.CompletedAt,
+				models.UserMissionColumns.UpdatedAt,
 			}); err != nil {
 				return err
 			}
-
-			// ミッション達成時
-			if mkm.MonsterCount <= ump.ProgressValue {
-				// ミッション達成日時更新
-				um := mkm.R.Mission.R.UserMissions[0]
-				um.CompletedAt = null.TimeFrom(params.RequestedAt)
-				if err := u.userMissionRepository.Update(ctx, um, []string{
-					models.UserMissionColumns.CompletedAt,
-					models.UserMissionColumns.UpdatedAt,
-				}); err != nil {
-					return err
-				}
-				// ミッション報酬獲得
-				if err := u.missionRewardUsecase.ObtainRewards(ctx, params.UserID, mkm.R.Mission); err != nil {
-					return err
-				}
+			// ミッション報酬獲得
+			if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mkm.R.Mission); err != nil {
+				return err
 			}
 		}
-
-		// 任意のモンスター討伐数ミッション達成チェック
-		if err := u.weeklyMissionUsecase.CheckMonsterKillCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// コイン獲得枚数ミッション達成チェック
-		if err := u.CheckCoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
-		return http.StatusInternalServerError, err
 	}
 
-	return http.StatusOK, nil
+	return nil
 }
 
 // コイン獲得枚数ミッション達成チェック
-func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
+func (u normalMissionUsecase) CoinCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	ccms, err := u.coinCountMissionRepository.FetchNotCompletedByUserID(ctx, userID)
 	if err != nil {
 		return err

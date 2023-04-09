@@ -5,6 +5,7 @@ import (
 	"mission_service/interface/controller"
 	"mission_service/interface/database"
 	"mission_service/router"
+	"mission_service/usecase/event"
 	"mission_service/usecase/mission"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,7 @@ func main() {
 		ur,
 		uir,
 	)
+
 	wmu := mission.NewWeeklyMissionUsecase(
 		mkkmr,
 		ur,
@@ -40,6 +42,7 @@ func main() {
 		umpr,
 		mru,
 	)
+
 	nmu := mission.NewNormailMissionUsecase(
 		ccmr,
 		ur,
@@ -49,6 +52,7 @@ func main() {
 		mru,
 		wmu,
 	)
+
 	dmu := mission.NewDailyMissionUsecase(
 		ur,
 		lmr,
@@ -56,13 +60,18 @@ func main() {
 		mru,
 		nmu,
 	)
+	
+	eu := event.NewEventMissionUsecase(
+		dmu,
+		wmu,
+		nmu,
+	)
 
 	// controller
-	dmc := controller.NewDailyMissionController(dmu)
-	nmc := controller.NewNormalMissionController(nmu)
+	ec := controller.NewEventController(eu)
 
 	// router
-	router := router.NewRouter(e, dmc, nmc)
+	router := router.NewRouter(e, ec)
 
 	router.Routing()
 

@@ -2,15 +2,17 @@ package mission
 
 import (
 	"context"
-	"mission_service/infrastructure/db"
 	"mission_service/models"
-	"mission_service/usecase/dto"
 	"mission_service/usecase/repository"
 	"mission_service/utils/timeutils"
-	"net/http"
+	"time"
 
 	"github.com/volatiletech/null/v8"
 )
+
+type DailyMissionUsecase interface {
+	LoginMission(context.Context, int64, time.Time) error
+}
 
 type dailyMissionUsecase struct {
 	userRepository         repository.UserRepository
@@ -36,54 +38,43 @@ func NewDailyMissionUsecase(
 	}
 }
 
-func (u dailyMissionUsecase) Login(ctx context.Context, params dto.LoginRequest) (int, error) {
-	lm, err := u.loginMissionRepository.FetchByUserIDAndLoginCount(ctx, params.UserID, 1)
+func (u dailyMissionUsecase) LoginMission(ctx context.Context, userID int64, requestedAt time.Time) error {
+	lm, err := u.loginMissionRepository.FetchByUserIDAndLoginCount(ctx, userID, 1)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return err
 	}
 	// 前回ミッション達成日時が今日の04:00以前の場合はミッション報酬獲得
-	if err := db.InTx(ctx, func(ctx context.Context) error {
 
-		if lm != nil &&
-			len(lm.R.Mission.R.UserMissions) != 0 &&
-			(lm.R.Mission.R.UserMissions[0].CompletedAt.Time.Before(timeutils.DailyMissionResetTime(params.RequestedAt))) {
+	if lm != nil &&
+		len(lm.R.Mission.R.UserMissions) != 0 &&
+		(lm.R.Mission.R.UserMissions[0].CompletedAt.Time.Before(timeutils.DailyMissionResetTime(requestedAt))) {
 
-			// ログインミッション達成日時更新
-			um := lm.R.Mission.R.UserMissions[0]
-			um.CompletedAt = null.TimeFrom(params.RequestedAt)
-			if err := u.userMissionRepository.Update(ctx, um, []string{
-				models.UserMissionColumns.CompletedAt,
-				models.UserMissionColumns.UpdatedAt,
-			}); err != nil {
-				return err
-			}
-
-			// ログインミッション報酬獲得
-			if err := u.missionRewardUsecase.ObtainRewards(ctx, params.UserID, lm.R.Mission); err != nil {
-				return err
-			}
-
-			// コイン獲得枚数ミッション達成チェック
-			if err := u.normalMissionUsecase.CheckCoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-				return err
-			}
-
-			// userの最終ログイン日時更新 (別システムでやる想定でいいかも)
-			if u.userRepository.Update(ctx, &models.User{
-				ID:          params.UserID,
-				LastLoginAt: params.RequestedAt,
-			}, []string{
-				models.UserColumns.LastLoginAt,
-				models.UserColumns.UpdatedAt,
-			}); err != nil {
-				return err
-			}
+		// ミッション達成日時更新
+		um := lm.R.Mission.R.UserMissions[0]
+		um.CompletedAt = null.TimeFrom(requestedAt)
+		if err := u.userMissionRepository.Update(ctx, um, []string{
+			models.UserMissionColumns.CompletedAt,
+			models.UserMissionColumns.UpdatedAt,
+		}); err != nil {
+			return err
 		}
 
-		return nil
-	}); err != nil {
-		return http.StatusInternalServerError, err
+		// ミッション報酬獲得
+		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, lm.R.Mission); err != nil {
+			return err
+		}
+
+		// userの最終ログイン日時更新 (別システムでやる想定でいいかも)
+		// if u.userRepository.Update(ctx, &models.User{
+		// 	ID:          params.UserID,
+		// 	LastLoginAt: params.RequestedAt,
+		// }, []string{
+		// 	models.UserColumns.LastLoginAt,
+		// 	models.UserColumns.UpdatedAt,
+		// }); err != nil {
+		// 	return err
+		// }
 	}
 
-	return http.StatusOK, nil
+	return nil
 }

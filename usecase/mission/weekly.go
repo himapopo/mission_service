@@ -11,7 +11,7 @@ import (
 )
 
 type WeeklyMissionUsecase interface {
-	CheckMonsterKillCountMission(context.Context, int64, time.Time) error
+	MonsterKillCountMission(context.Context, int64, time.Time) error
 }
 
 type weeklyMissionUsecase struct {
@@ -39,7 +39,7 @@ func NewWeeklyMissionUsecase(
 }
 
 // 任意のモンスター討伐数ミッション達成チェック
-func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
+func (u weeklyMissionUsecase) MonsterKillCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	mkcms, err := u.monsterKillCountMissionRepository.FetchWeeklyByUserID(ctx, userID)
 	if err != nil {
 		return err
