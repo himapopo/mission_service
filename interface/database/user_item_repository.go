@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-type userItemRepostitory struct {
+type userItemRepository struct {
 	dbUtil
 }
 
-func NewUserItemRepostitory(dbUtil dbUtil) userItemRepostitory {
-	return userItemRepostitory{
+func NewUserItemRepository(dbUtil dbUtil) userItemRepository {
+	return userItemRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r userItemRepostitory) FetchByItemIDAndUserID(ctx context.Context, userID, itemID int64) (*models.UserItem, error) {
+func (r userItemRepository) FetchByItemIDAndUserID(ctx context.Context, userID, itemID int64) (*models.UserItem, error) {
 	result, err := models.UserItems(
 		models.UserItemWhere.UserID.EQ(userID),
 		models.UserItemWhere.ItemID.EQ(itemID),
@@ -26,11 +26,11 @@ func (r userItemRepostitory) FetchByItemIDAndUserID(ctx context.Context, userID,
 	return result, r.Error(err)
 }
 
-func (r userItemRepostitory) Create(ctx context.Context, m *models.UserItem) error {
+func (r userItemRepository) Create(ctx context.Context, m *models.UserItem) error {
 	return r.Error(m.Insert(ctx, r.GetDao(ctx), boil.Infer()))
 }
 
-func (r userItemRepostitory) Update(ctx context.Context, m *models.UserItem, updateColumns []string) error {
+func (r userItemRepository) Update(ctx context.Context, m *models.UserItem, updateColumns []string) error {
 	cnt, err := m.Update(ctx, r.GetDao(ctx), boil.Whitelist(updateColumns...))
 	if cnt == 0 {
 		return fmt.Errorf("user item update cnt = %d", cnt)

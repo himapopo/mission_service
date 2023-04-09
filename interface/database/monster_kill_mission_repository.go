@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type monsterKillMissionRepostitory struct {
+type monsterKillMissionRepository struct {
 	dbUtil
 }
 
-func NewMonsterKillMissionRepostitory(dbUtil dbUtil) monsterKillMissionRepostitory {
-	return monsterKillMissionRepostitory{
+func NewMonsterKillMissionRepository(dbUtil dbUtil) monsterKillMissionRepository {
+	return monsterKillMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r monsterKillMissionRepostitory) FetchNotCompletedByUserIDAndMonsterID(ctx context.Context, userID, monsterID int64) (*models.MonsterKillMission, error) {
+func (r monsterKillMissionRepository) FetchNotCompletedByUserIDAndMonsterID(ctx context.Context, userID, monsterID int64) (*models.MonsterKillMission, error) {
 	result, err := models.MonsterKillMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
@@ -71,6 +71,13 @@ func (r monsterKillMissionRepostitory) FetchNotCompletedByUserIDAndMonsterID(ctx
 			qm.Rels(
 				models.MonsterKillMissionRels.Mission,
 				models.MissionRels.MissionRewardItems,
+			),
+		),
+		qm.Load(
+			qm.Rels(
+				models.MonsterKillMissionRels.Mission,
+				models.MissionRels.CompleteMissionMissionReleases,
+				models.MissionReleaseRels.ReleaseMission,
 			),
 		),
 	).One(ctx, r.GetDao(ctx))

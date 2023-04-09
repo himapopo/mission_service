@@ -5,6 +5,7 @@ import (
 	"mission_service/interface/controller"
 	"mission_service/interface/database"
 	"mission_service/router"
+	"mission_service/usecase/event"
 	"mission_service/usecase/mission"
 
 	"github.com/gin-gonic/gin"
@@ -19,50 +20,71 @@ func main() {
 	dbUtil := db.NewDB()
 
 	// repository
-	ur := database.NewuUserRepostitory(dbUtil)
-	lmr := database.NewLoginMissionRepostitory(dbUtil)
-	umr := database.NewUserMissionRepostitory(dbUtil)
-	umpr := database.NewUserMissionProgressRepostitory(dbUtil)
-	uir := database.NewUserItemRepostitory(dbUtil)
-	ccmr := database.NewCoinCountMissionRepostitory(dbUtil)
-	mkmr := database.NewMonsterKillMissionRepostitory(dbUtil)
-	mkkmr := database.NewMonsterKillCountMissionRepostitory(dbUtil)
+	userRepository := database.NewUserRepository(dbUtil)
+	loginMissionRepository := database.NewLoginMissionRepository(dbUtil)
+	userMissionRepository := database.NewUserMissionRepository(dbUtil)
+	userMissionProgressRepository := database.NewUserMissionProgressRepository(dbUtil)
+	userMonsterRepository := database.NewuUserMonsterRepository(dbUtil)
+	userItemRepository := database.NewUserItemRepository(dbUtil)
+	coinCountMissionRepository := database.NewCoinCountMissionRepository(dbUtil)
+	monsterkillMissionRepository := database.NewMonsterKillMissionRepository(dbUtil)
+	monsterkillCountMissionRepository := database.NewMonsterKillCountMissionRepository(dbUtil)
+	monsterLevelUpMissionRepository := database.NewMonsterLevelUpMissionRepository(dbUtil)
+	monsterLevelUpCountMissionRepository := database.NewMonsterLevelUpCountMissionRepository(dbUtil)
 
 	// usecase
-	mru := mission.NewMissionRewardUsecase(
-		ur,
-		uir,
+	missionReleaseUsecase := mission.NewMissionReleaseUsecase(
+		userMissionRepository,
+		userMissionProgressRepository,
 	)
-	wmu := mission.NewWeeklyMissionUsecase(
-		mkkmr,
-		ur,
-		umr,
-		umpr,
-		mru,
+
+	missionRewardUsecase := mission.NewMissionRewardUsecase(
+		userRepository,
+		userItemRepository,
 	)
-	nmu := mission.NewNormailMissionUsecase(
-		ccmr,
-		ur,
-		umr,
-		umpr,
-		mkmr,
-		mru,
-		wmu,
+
+	weeklyMissionUsecase := mission.NewWeeklyMissionUsecase(
+		monsterkillCountMissionRepository,
+		userRepository,
+		userMissionRepository,
+		userMissionProgressRepository,
+		missionRewardUsecase,
+		missionReleaseUsecase,
 	)
-	dmu := mission.NewDailyMissionUsecase(
-		ur,
-		lmr,
-		umr,
-		mru,
-		nmu,
+
+	normalMissionUsecase := mission.NewNormailMissionUsecase(
+		coinCountMissionRepository,
+		userRepository,
+		userMissionRepository,
+		userMissionProgressRepository,
+		userMonsterRepository,
+		monsterkillMissionRepository,
+		monsterLevelUpMissionRepository,
+		monsterLevelUpCountMissionRepository,
+		missionRewardUsecase,
+		missionReleaseUsecase,
+	)
+
+	dailyMissionUsecase := mission.NewDailyMissionUsecase(
+		userRepository,
+		loginMissionRepository,
+		userMissionRepository,
+		missionRewardUsecase,
+		normalMissionUsecase,
+		missionReleaseUsecase,
+	)
+
+	eu := event.NewEventMissionUsecase(
+		dailyMissionUsecase,
+		weeklyMissionUsecase,
+		normalMissionUsecase,
 	)
 
 	// controller
-	dmc := controller.NewDailyMissionController(dmu)
-	nmc := controller.NewNormalMissionController(nmu)
+	ec := controller.NewEventController(eu)
 
 	// router
-	router := router.NewRouter(e, dmc, nmc)
+	router := router.NewRouter(e, ec)
 
 	router.Routing()
 

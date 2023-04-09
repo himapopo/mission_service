@@ -8,20 +8,31 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-type userMissionRepostitory struct {
+type userMissionRepository struct {
 	dbUtil
 }
 
-func NewUserMissionRepostitory(dbUtil dbUtil) userMissionRepostitory {
-	return userMissionRepostitory{
+func NewUserMissionRepository(dbUtil dbUtil) userMissionRepository {
+	return userMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r userMissionRepostitory) Update(ctx context.Context, m *models.UserMission, updateColumns []string) error {
+func (r userMissionRepository) Update(ctx context.Context, m *models.UserMission, updateColumns []string) error {
 	cnt, err := m.Update(ctx, r.GetDao(ctx), boil.Whitelist(updateColumns...))
 	if cnt == 0 {
 		return fmt.Errorf("user mission update cnt = %d", cnt)
 	}
 	return r.Error(err)
+}
+
+func (r userMissionRepository) FetchByUserID(ctx context.Context, userID int64) ([]*models.UserMission, error) {
+	results, err := models.UserMissions(
+		models.UserMissionWhere.UserID.EQ(userID),
+	).All(ctx, r.GetDao(ctx))
+	return results, r.Error(err)
+}
+
+func (r userMissionRepository) Create(ctx context.Context, m *models.UserMission) error {
+	return r.Error(m.Insert(ctx, r.GetDao(ctx), boil.Infer()))
 }

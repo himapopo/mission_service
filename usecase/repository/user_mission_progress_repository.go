@@ -7,4 +7,5 @@ import (
 
 type UserMissionProgressRepository interface {
 	Update(context.Context, *models.UserMissionProgress, []string) error
+	Create(context.Context, *models.UserMissionProgress) error
 }

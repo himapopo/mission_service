@@ -98,41 +98,47 @@ var MissionWhere = struct {
 
 // MissionRels is where relationship names are stored.
 var MissionRels = struct {
-	CoinCountMission           string
-	GetItemMission             string
-	LoginMission               string
-	MonsterKillCountMission    string
-	MonsterKillMission         string
-	MonsterLevelUpCountMission string
-	MonsterLevelUpMission      string
-	MissionRewardCoins         string
-	MissionRewardItems         string
-	UserMissions               string
+	CoinCountMission               string
+	GetItemMission                 string
+	LoginMission                   string
+	MonsterKillCountMission        string
+	MonsterKillMission             string
+	MonsterLevelUpCountMission     string
+	MonsterLevelUpMission          string
+	CompleteMissionMissionReleases string
+	ReleaseMissionMissionReleases  string
+	MissionRewardCoins             string
+	MissionRewardItems             string
+	UserMissions                   string
 }{
-	CoinCountMission:           "CoinCountMission",
-	GetItemMission:             "GetItemMission",
-	LoginMission:               "LoginMission",
-	MonsterKillCountMission:    "MonsterKillCountMission",
-	MonsterKillMission:         "MonsterKillMission",
-	MonsterLevelUpCountMission: "MonsterLevelUpCountMission",
-	MonsterLevelUpMission:      "MonsterLevelUpMission",
-	MissionRewardCoins:         "MissionRewardCoins",
-	MissionRewardItems:         "MissionRewardItems",
-	UserMissions:               "UserMissions",
+	CoinCountMission:               "CoinCountMission",
+	GetItemMission:                 "GetItemMission",
+	LoginMission:                   "LoginMission",
+	MonsterKillCountMission:        "MonsterKillCountMission",
+	MonsterKillMission:             "MonsterKillMission",
+	MonsterLevelUpCountMission:     "MonsterLevelUpCountMission",
+	MonsterLevelUpMission:          "MonsterLevelUpMission",
+	CompleteMissionMissionReleases: "CompleteMissionMissionReleases",
+	ReleaseMissionMissionReleases:  "ReleaseMissionMissionReleases",
+	MissionRewardCoins:             "MissionRewardCoins",
+	MissionRewardItems:             "MissionRewardItems",
+	UserMissions:                   "UserMissions",
 }
 
 // missionR is where relationships are stored.
 type missionR struct {
-	CoinCountMission           *CoinCountMission           `boil:"CoinCountMission" json:"CoinCountMission" toml:"CoinCountMission" yaml:"CoinCountMission"`
-	GetItemMission             *GetItemMission             `boil:"GetItemMission" json:"GetItemMission" toml:"GetItemMission" yaml:"GetItemMission"`
-	LoginMission               *LoginMission               `boil:"LoginMission" json:"LoginMission" toml:"LoginMission" yaml:"LoginMission"`
-	MonsterKillCountMission    *MonsterKillCountMission    `boil:"MonsterKillCountMission" json:"MonsterKillCountMission" toml:"MonsterKillCountMission" yaml:"MonsterKillCountMission"`
-	MonsterKillMission         *MonsterKillMission         `boil:"MonsterKillMission" json:"MonsterKillMission" toml:"MonsterKillMission" yaml:"MonsterKillMission"`
-	MonsterLevelUpCountMission *MonsterLevelUpCountMission `boil:"MonsterLevelUpCountMission" json:"MonsterLevelUpCountMission" toml:"MonsterLevelUpCountMission" yaml:"MonsterLevelUpCountMission"`
-	MonsterLevelUpMission      *MonsterLevelUpMission      `boil:"MonsterLevelUpMission" json:"MonsterLevelUpMission" toml:"MonsterLevelUpMission" yaml:"MonsterLevelUpMission"`
-	MissionRewardCoins         MissionRewardCoinSlice      `boil:"MissionRewardCoins" json:"MissionRewardCoins" toml:"MissionRewardCoins" yaml:"MissionRewardCoins"`
-	MissionRewardItems         MissionRewardItemSlice      `boil:"MissionRewardItems" json:"MissionRewardItems" toml:"MissionRewardItems" yaml:"MissionRewardItems"`
-	UserMissions               UserMissionSlice            `boil:"UserMissions" json:"UserMissions" toml:"UserMissions" yaml:"UserMissions"`
+	CoinCountMission               *CoinCountMission           `boil:"CoinCountMission" json:"CoinCountMission" toml:"CoinCountMission" yaml:"CoinCountMission"`
+	GetItemMission                 *GetItemMission             `boil:"GetItemMission" json:"GetItemMission" toml:"GetItemMission" yaml:"GetItemMission"`
+	LoginMission                   *LoginMission               `boil:"LoginMission" json:"LoginMission" toml:"LoginMission" yaml:"LoginMission"`
+	MonsterKillCountMission        *MonsterKillCountMission    `boil:"MonsterKillCountMission" json:"MonsterKillCountMission" toml:"MonsterKillCountMission" yaml:"MonsterKillCountMission"`
+	MonsterKillMission             *MonsterKillMission         `boil:"MonsterKillMission" json:"MonsterKillMission" toml:"MonsterKillMission" yaml:"MonsterKillMission"`
+	MonsterLevelUpCountMission     *MonsterLevelUpCountMission `boil:"MonsterLevelUpCountMission" json:"MonsterLevelUpCountMission" toml:"MonsterLevelUpCountMission" yaml:"MonsterLevelUpCountMission"`
+	MonsterLevelUpMission          *MonsterLevelUpMission      `boil:"MonsterLevelUpMission" json:"MonsterLevelUpMission" toml:"MonsterLevelUpMission" yaml:"MonsterLevelUpMission"`
+	CompleteMissionMissionReleases MissionReleaseSlice         `boil:"CompleteMissionMissionReleases" json:"CompleteMissionMissionReleases" toml:"CompleteMissionMissionReleases" yaml:"CompleteMissionMissionReleases"`
+	ReleaseMissionMissionReleases  MissionReleaseSlice         `boil:"ReleaseMissionMissionReleases" json:"ReleaseMissionMissionReleases" toml:"ReleaseMissionMissionReleases" yaml:"ReleaseMissionMissionReleases"`
+	MissionRewardCoins             MissionRewardCoinSlice      `boil:"MissionRewardCoins" json:"MissionRewardCoins" toml:"MissionRewardCoins" yaml:"MissionRewardCoins"`
+	MissionRewardItems             MissionRewardItemSlice      `boil:"MissionRewardItems" json:"MissionRewardItems" toml:"MissionRewardItems" yaml:"MissionRewardItems"`
+	UserMissions                   UserMissionSlice            `boil:"UserMissions" json:"UserMissions" toml:"UserMissions" yaml:"UserMissions"`
 }
 
 // NewStruct creates a new relationship struct
@@ -187,6 +193,20 @@ func (r *missionR) GetMonsterLevelUpMission() *MonsterLevelUpMission {
 		return nil
 	}
 	return r.MonsterLevelUpMission
+}
+
+func (r *missionR) GetCompleteMissionMissionReleases() MissionReleaseSlice {
+	if r == nil {
+		return nil
+	}
+	return r.CompleteMissionMissionReleases
+}
+
+func (r *missionR) GetReleaseMissionMissionReleases() MissionReleaseSlice {
+	if r == nil {
+		return nil
+	}
+	return r.ReleaseMissionMissionReleases
 }
 
 func (r *missionR) GetMissionRewardCoins() MissionRewardCoinSlice {
@@ -574,6 +594,34 @@ func (o *Mission) MonsterLevelUpMission(mods ...qm.QueryMod) monsterLevelUpMissi
 	queryMods = append(queryMods, mods...)
 
 	return MonsterLevelUpMissions(queryMods...)
+}
+
+// CompleteMissionMissionReleases retrieves all the mission_release's MissionReleases with an executor via complete_mission_id column.
+func (o *Mission) CompleteMissionMissionReleases(mods ...qm.QueryMod) missionReleaseQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"mission_releases\".\"complete_mission_id\"=?", o.ID),
+	)
+
+	return MissionReleases(queryMods...)
+}
+
+// ReleaseMissionMissionReleases retrieves all the mission_release's MissionReleases with an executor via release_mission_id column.
+func (o *Mission) ReleaseMissionMissionReleases(mods ...qm.QueryMod) missionReleaseQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"mission_releases\".\"release_mission_id\"=?", o.ID),
+	)
+
+	return MissionReleases(queryMods...)
 }
 
 // MissionRewardCoins retrieves all the mission_reward_coin's MissionRewardCoins with an executor.
@@ -1437,6 +1485,234 @@ func (missionL) LoadMonsterLevelUpMission(ctx context.Context, e boil.ContextExe
 	return nil
 }
 
+// LoadCompleteMissionMissionReleases allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (missionL) LoadCompleteMissionMissionReleases(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
+	var slice []*Mission
+	var object *Mission
+
+	if singular {
+		var ok bool
+		object, ok = maybeMission.(*Mission)
+		if !ok {
+			object = new(Mission)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMission))
+			}
+		}
+	} else {
+		s, ok := maybeMission.(*[]*Mission)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMission))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &missionR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &missionR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`mission_releases`),
+		qm.WhereIn(`mission_releases.complete_mission_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load mission_releases")
+	}
+
+	var resultSlice []*MissionRelease
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice mission_releases")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on mission_releases")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for mission_releases")
+	}
+
+	if len(missionReleaseAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.CompleteMissionMissionReleases = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &missionReleaseR{}
+			}
+			foreign.R.CompleteMission = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.CompleteMissionID {
+				local.R.CompleteMissionMissionReleases = append(local.R.CompleteMissionMissionReleases, foreign)
+				if foreign.R == nil {
+					foreign.R = &missionReleaseR{}
+				}
+				foreign.R.CompleteMission = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadReleaseMissionMissionReleases allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (missionL) LoadReleaseMissionMissionReleases(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
+	var slice []*Mission
+	var object *Mission
+
+	if singular {
+		var ok bool
+		object, ok = maybeMission.(*Mission)
+		if !ok {
+			object = new(Mission)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMission))
+			}
+		}
+	} else {
+		s, ok := maybeMission.(*[]*Mission)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMission))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &missionR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &missionR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`mission_releases`),
+		qm.WhereIn(`mission_releases.release_mission_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load mission_releases")
+	}
+
+	var resultSlice []*MissionRelease
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice mission_releases")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on mission_releases")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for mission_releases")
+	}
+
+	if len(missionReleaseAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.ReleaseMissionMissionReleases = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &missionReleaseR{}
+			}
+			foreign.R.ReleaseMission = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ReleaseMissionID {
+				local.R.ReleaseMissionMissionReleases = append(local.R.ReleaseMissionMissionReleases, foreign)
+				if foreign.R == nil {
+					foreign.R = &missionReleaseR{}
+				}
+				foreign.R.ReleaseMission = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // LoadMissionRewardCoins allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
 func (missionL) LoadMissionRewardCoins(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
@@ -2125,6 +2401,112 @@ func (o *Mission) SetMonsterLevelUpMission(ctx context.Context, exec boil.Contex
 		}
 	} else {
 		related.R.Mission = o
+	}
+	return nil
+}
+
+// AddCompleteMissionMissionReleases adds the given related objects to the existing relationships
+// of the mission, optionally inserting them as new records.
+// Appends related to o.R.CompleteMissionMissionReleases.
+// Sets related.R.CompleteMission appropriately.
+func (o *Mission) AddCompleteMissionMissionReleases(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*MissionRelease) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.CompleteMissionID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"mission_releases\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"complete_mission_id"}),
+				strmangle.WhereClause("\"", "\"", 2, missionReleasePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.CompleteMissionID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &missionR{
+			CompleteMissionMissionReleases: related,
+		}
+	} else {
+		o.R.CompleteMissionMissionReleases = append(o.R.CompleteMissionMissionReleases, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &missionReleaseR{
+				CompleteMission: o,
+			}
+		} else {
+			rel.R.CompleteMission = o
+		}
+	}
+	return nil
+}
+
+// AddReleaseMissionMissionReleases adds the given related objects to the existing relationships
+// of the mission, optionally inserting them as new records.
+// Appends related to o.R.ReleaseMissionMissionReleases.
+// Sets related.R.ReleaseMission appropriately.
+func (o *Mission) AddReleaseMissionMissionReleases(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*MissionRelease) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ReleaseMissionID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"mission_releases\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"release_mission_id"}),
+				strmangle.WhereClause("\"", "\"", 2, missionReleasePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ReleaseMissionID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &missionR{
+			ReleaseMissionMissionReleases: related,
+		}
+	} else {
+		o.R.ReleaseMissionMissionReleases = append(o.R.ReleaseMissionMissionReleases, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &missionReleaseR{
+				ReleaseMission: o,
+			}
+		} else {
+			rel.R.ReleaseMission = o
+		}
 	}
 	return nil
 }

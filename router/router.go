@@ -3,32 +3,28 @@ package router
 import "github.com/gin-gonic/gin"
 
 type router struct {
-	e                       *gin.Engine
-	dailyMissionController  DailyMissionController
-	normalMissionController NormalMissionController
+	e               *gin.Engine
+	eventController EventController
 }
 
-type DailyMissionController interface {
+type EventController interface {
 	Login(*gin.Context)
-}
-
-type NormalMissionController interface {
 	MonsterKill(*gin.Context)
+	MonsterLevelUp(*gin.Context)
 }
 
 func NewRouter(
 	e *gin.Engine,
-	dailyMissionController DailyMissionController,
-	norNormalMissionController NormalMissionController,
+	eventController EventController,
 ) router {
 	return router{
-		e:                       e,
-		dailyMissionController:  dailyMissionController,
-		normalMissionController: norNormalMissionController,
+		e:               e,
+		eventController: eventController,
 	}
 }
 
 func (r router) Routing() {
-	r.e.POST("/login", r.dailyMissionController.Login)
-	r.e.POST("/monster_kill", r.normalMissionController.MonsterKill)
+	r.e.POST("/login", r.eventController.Login)
+	r.e.POST("/monster_kill", r.eventController.MonsterKill)
+	r.e.POST("/monster_level_up", r.eventController.MonsterLevelUp)
 }

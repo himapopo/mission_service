@@ -11,7 +11,7 @@ import (
 )
 
 type WeeklyMissionUsecase interface {
-	CheckMonsterKillCountMission(context.Context, int64, time.Time) error
+	MonsterKillCountMission(context.Context, int64, time.Time) error
 }
 
 type weeklyMissionUsecase struct {
@@ -20,6 +20,7 @@ type weeklyMissionUsecase struct {
 	userMissionRepository             repository.UserMissionRepository
 	userMissionProgressRepository     repository.UserMissionProgressRepository
 	missionRewardUsecase              MissionRewardUsecase
+	missionReleaseUsecase             MissionReleaseUsecase
 }
 
 func NewWeeklyMissionUsecase(
@@ -28,6 +29,7 @@ func NewWeeklyMissionUsecase(
 	userMissionRepository repository.UserMissionRepository,
 	userMissionProgressRepository repository.UserMissionProgressRepository,
 	missionRewardUsecase MissionRewardUsecase,
+	missionReleaseUsecase MissionReleaseUsecase,
 ) weeklyMissionUsecase {
 	return weeklyMissionUsecase{
 		monsterKillCountMissionRepository: monsterKillCountMissionRepository,
@@ -35,11 +37,12 @@ func NewWeeklyMissionUsecase(
 		userMissionRepository:             userMissionRepository,
 		userMissionProgressRepository:     userMissionProgressRepository,
 		missionRewardUsecase:              missionRewardUsecase,
+		missionReleaseUsecase:             missionReleaseUsecase,
 	}
 }
 
 // 任意のモンスター討伐数ミッション達成チェック
-func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
+func (u weeklyMissionUsecase) MonsterKillCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	mkcms, err := u.monsterKillCountMissionRepository.FetchWeeklyByUserID(ctx, userID)
 	if err != nil {
 		return err
@@ -95,9 +98,18 @@ func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, 
 			return err
 		}
 
+		mission := mkcm.R.Mission
+
 		// ミッション報酬獲得
 		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mkcm.R.Mission); err != nil {
 			return err
+		}
+
+		// ミッション解放
+		if len(mission.R.CompleteMissionMissionReleases) != 0 {
+			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
+				return err
+			}
 		}
 
 	}
