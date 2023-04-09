@@ -37,6 +37,7 @@ func (r loginMissionRepository) FetchDailyByUserID(ctx context.Context, userID i
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
+		models.MissionWhere.MissionType.EQ("daily"),
 		models.UserMissionWhere.UserID.EQ(userID),
 		qm.Load(
 			qm.Rels(

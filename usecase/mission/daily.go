@@ -85,16 +85,16 @@ func (u dailyMissionUsecase) LoginMission(ctx context.Context, userID int64, req
 
 		mission := lm.R.Mission
 
-		// ミッション報酬獲得
-		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mission); err != nil {
-			return err
-		}
-
 		// ミッション解放
 		if len(mission.R.CompleteMissionMissionReleases) != 0 {
 			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
 				return err
 			}
+		}
+
+		// ミッション報酬獲得
+		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mission, requestedAt); err != nil {
+			return err
 		}
 
 		// userの最終ログイン日時更新

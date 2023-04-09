@@ -40,16 +40,6 @@ func (u eventUsecase) Login(ctx context.Context, params dto.LoginRequest) (int, 
 			return err
 		}
 
-		// コイン獲得枚数ミッション達成チェック
-		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// 特定のアイテム獲得ミッション達成チェック
-		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
 		return nil
 	}); err != nil {
 		return http.StatusInternalServerError, err
@@ -71,16 +61,6 @@ func (u eventUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillReq
 			return err
 		}
 
-		// コイン獲得枚数ミッション達成チェック
-		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// 特定のアイテム獲得ミッション達成チェック
-		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
 		return nil
 	}); err != nil {
 		return http.StatusInternalServerError, err
@@ -99,16 +79,6 @@ func (u eventUsecase) MonsterLevelUp(ctx context.Context, params dto.MonsterLeve
 
 		// 一定レベル以上のモンスター獲得ミッション達成チェック
 		if err := u.normalMissionUsecase.MonsterLevelUpCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// コイン獲得枚数ミッション達成チェック
-		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// 特定のアイテム獲得ミッション達成チェック
-		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
 			return err
 		}
 
