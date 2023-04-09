@@ -31,6 +31,7 @@ func main() {
 	monsterkillCountMissionRepository := database.NewMonsterKillCountMissionRepository(dbUtil)
 	monsterLevelUpMissionRepository := database.NewMonsterLevelUpMissionRepository(dbUtil)
 	monsterLevelUpCountMissionRepository := database.NewMonsterLevelUpCountMissionRepository(dbUtil)
+	getItemMissionRepository := database.NewGetItemMissionRepository(dbUtil)
 
 	// usecase
 	missionReleaseUsecase := mission.NewMissionReleaseUsecase(
@@ -55,12 +56,14 @@ func main() {
 	normalMissionUsecase := mission.NewNormailMissionUsecase(
 		coinCountMissionRepository,
 		userRepository,
+		userItemRepository,
 		userMissionRepository,
 		userMissionProgressRepository,
 		userMonsterRepository,
 		monsterkillMissionRepository,
 		monsterLevelUpMissionRepository,
 		monsterLevelUpCountMissionRepository,
+		getItemMissionRepository,
 		missionRewardUsecase,
 		missionReleaseUsecase,
 	)

@@ -45,6 +45,11 @@ func (u eventUsecase) Login(ctx context.Context, params dto.LoginRequest) (int, 
 			return err
 		}
 
+		// 特定のアイテム獲得ミッション達成チェック
+		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
+			return err
+		}
+
 		return nil
 	}); err != nil {
 		return http.StatusInternalServerError, err
@@ -57,7 +62,7 @@ func (u eventUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillReq
 	if err := db.InTx(ctx, func(ctx context.Context) error {
 
 		// 特定のモンスター討伐ミッション達成チェック
-		if err := u.normalMissionUsecase.MonsterKillMission(ctx, params.UserID, params.MyMonsterID, params.OpponentMonsterID, params.RequestedAt); err != nil {
+		if err := u.normalMissionUsecase.MonsterKillMission(ctx, params.UserID, params.UserMonsterID, params.OpponentMonsterID, params.RequestedAt); err != nil {
 			return err
 		}
 
@@ -68,6 +73,11 @@ func (u eventUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillReq
 
 		// コイン獲得枚数ミッション達成チェック
 		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
+			return err
+		}
+
+		// 特定のアイテム獲得ミッション達成チェック
+		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
 			return err
 		}
 
@@ -83,7 +93,7 @@ func (u eventUsecase) MonsterLevelUp(ctx context.Context, params dto.MonsterLeve
 	if err := db.InTx(ctx, func(ctx context.Context) error {
 
 		// 特定のモンスターレベルアップミッション達成チェック
-		if err := u.normalMissionUsecase.MonsterLevelUpMission(ctx, params.UserID, params.MyMonsterID, params.Amount, params.RequestedAt); err != nil {
+		if err := u.normalMissionUsecase.MonsterLevelUpMission(ctx, params.UserID, params.UserMonsterID, params.Amount, params.RequestedAt); err != nil {
 			return err
 		}
 
@@ -94,6 +104,11 @@ func (u eventUsecase) MonsterLevelUp(ctx context.Context, params dto.MonsterLeve
 
 		// コイン獲得枚数ミッション達成チェック
 		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
+			return err
+		}
+
+		// 特定のアイテム獲得ミッション達成チェック
+		if err := u.normalMissionUsecase.GetItemMission(ctx, params.UserID, params.RequestedAt); err != nil {
 			return err
 		}
 
