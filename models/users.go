@@ -26,12 +26,9 @@ type User struct {
 	ID int64 `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// 名前
 	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	// メールアドレス
-	Email string `boil:"email" json:"email" toml:"email" yaml:"email"`
-	// 暗号化済みパスワード
-	Password string `boil:"password" json:"password" toml:"password" yaml:"password"`
 	// 獲得コイン数
-	CoinCount   int64     `boil:"coin_count" json:"coin_count" toml:"coin_count" yaml:"coin_count"`
+	CoinCount int64 `boil:"coin_count" json:"coin_count" toml:"coin_count" yaml:"coin_count"`
+	// 最終ログイン日時
 	LastLoginAt time.Time `boil:"last_login_at" json:"last_login_at" toml:"last_login_at" yaml:"last_login_at"`
 	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
@@ -43,8 +40,6 @@ type User struct {
 var UserColumns = struct {
 	ID          string
 	Name        string
-	Email       string
-	Password    string
 	CoinCount   string
 	LastLoginAt string
 	UpdatedAt   string
@@ -52,8 +47,6 @@ var UserColumns = struct {
 }{
 	ID:          "id",
 	Name:        "name",
-	Email:       "email",
-	Password:    "password",
 	CoinCount:   "coin_count",
 	LastLoginAt: "last_login_at",
 	UpdatedAt:   "updated_at",
@@ -63,8 +56,6 @@ var UserColumns = struct {
 var UserTableColumns = struct {
 	ID          string
 	Name        string
-	Email       string
-	Password    string
 	CoinCount   string
 	LastLoginAt string
 	UpdatedAt   string
@@ -72,8 +63,6 @@ var UserTableColumns = struct {
 }{
 	ID:          "users.id",
 	Name:        "users.name",
-	Email:       "users.email",
-	Password:    "users.password",
 	CoinCount:   "users.coin_count",
 	LastLoginAt: "users.last_login_at",
 	UpdatedAt:   "users.updated_at",
@@ -85,8 +74,6 @@ var UserTableColumns = struct {
 var UserWhere = struct {
 	ID          whereHelperint64
 	Name        whereHelperstring
-	Email       whereHelperstring
-	Password    whereHelperstring
 	CoinCount   whereHelperint64
 	LastLoginAt whereHelpertime_Time
 	UpdatedAt   whereHelpertime_Time
@@ -94,8 +81,6 @@ var UserWhere = struct {
 }{
 	ID:          whereHelperint64{field: "\"users\".\"id\""},
 	Name:        whereHelperstring{field: "\"users\".\"name\""},
-	Email:       whereHelperstring{field: "\"users\".\"email\""},
-	Password:    whereHelperstring{field: "\"users\".\"password\""},
 	CoinCount:   whereHelperint64{field: "\"users\".\"coin_count\""},
 	LastLoginAt: whereHelpertime_Time{field: "\"users\".\"last_login_at\""},
 	UpdatedAt:   whereHelpertime_Time{field: "\"users\".\"updated_at\""},
@@ -150,8 +135,8 @@ func (r *userR) GetUserMonsters() UserMonsterSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "name", "email", "password", "coin_count", "last_login_at", "updated_at", "created_at"}
-	userColumnsWithoutDefault = []string{"name", "email", "password"}
+	userAllColumns            = []string{"id", "name", "coin_count", "last_login_at", "updated_at", "created_at"}
+	userColumnsWithoutDefault = []string{"name"}
 	userColumnsWithDefault    = []string{"id", "coin_count", "last_login_at", "updated_at", "created_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}

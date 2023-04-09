@@ -3,7 +3,6 @@ package mission
 import (
 	"context"
 	"errors"
-	"fmt"
 	"mission_service/models"
 	"mission_service/usecase/repository"
 	"mission_service/utils/timeutils"
@@ -60,11 +59,6 @@ func (u dailyMissionUsecase) LoginMission(ctx context.Context, userID int64, req
 
 	// requestedAtが前回ミッション達成日時以降 &&
 	// 前回ミッション達成日時がrequestedAtの日付の04:00以前の場合はミッション報酬獲得
-
-	fmt.Println("----------------------")
-	fmt.Println(ump.LastProgressUpdatedAt)
-	fmt.Println(timeutils.DailyMissionResetTime(requestedAt))
-	fmt.Println(ump.LastProgressUpdatedAt.Before(timeutils.DailyMissionResetTime(requestedAt)))
 	if requestedAt.After(ump.LastProgressUpdatedAt) &&
 		(ump.LastProgressUpdatedAt.Before(timeutils.DailyMissionResetTime(requestedAt))) {
 
@@ -103,7 +97,7 @@ func (u dailyMissionUsecase) LoginMission(ctx context.Context, userID int64, req
 			}
 		}
 
-		// userの最終ログイン日時更新 (※別システムでやる想定)
+		// userの最終ログイン日時更新
 		if u.userRepository.Update(ctx, &models.User{
 			ID:          userID,
 			LastLoginAt: requestedAt,
