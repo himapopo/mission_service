@@ -1,5 +1,9 @@
 RUN = docker compose exec api
 
+cp-env:
+	touch .env
+	cp .env.sample .env
+
 build:
 	docker compose build
 
