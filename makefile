@@ -1,5 +1,8 @@
 RUN = docker compose exec api
 
+build:
+	docker compose build
+
 up:
 	docker compose up -d
 
