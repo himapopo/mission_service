@@ -2,7 +2,8 @@ FROM golang:1.20.2-alpine3.17
 
 WORKDIR /mission_service
 
-RUN go install github.com/cosmtrek/air@v1.42.0 \
+RUN apk --update add tzdata \
+&& go install github.com/cosmtrek/air@v1.42.0 \
 && go install github.com/rubenv/sql-migrate/...@v1.4.0 \
 && go install github.com/volatiletech/sqlboiler/v4@v4.14.2 \
 && go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@latest

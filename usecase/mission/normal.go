@@ -57,9 +57,11 @@ func (u normalMissionUsecase) MonsterKill(ctx context.Context, params dto.Monste
 		if mkm != nil {
 			ump := mkm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
 			ump.ProgressValue += 1
+			ump.LastProgressUpdatedAt = params.RequestedAt
 			// ミッションの進捗更新
 			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 				models.UserMissionProgressColumns.ProgressValue,
+				models.UserMissionProgressColumns.LastProgressUpdatedAt,
 				models.UserMissionProgressColumns.UpdatedAt,
 			}); err != nil {
 				return err
@@ -102,7 +104,7 @@ func (u normalMissionUsecase) MonsterKill(ctx context.Context, params dto.Monste
 }
 
 // ユーザーの所有コイン数から、達成済みのコイン獲得枚数ミッションがないかチェック
-func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID int64, completedAt time.Time) error {
+func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	ccms, err := u.coinCountMissionRepository.FetchNotCompletedByUserID(ctx, userID)
 	if err != nil {
 		return err
@@ -115,8 +117,10 @@ func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID 
 		// ミッションの進捗更新
 		ump := ccm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
 		ump.ProgressValue = user.CoinCount
+		ump.LastProgressUpdatedAt = requestedAt
 		if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 			models.UserMissionProgressColumns.ProgressValue,
+			models.UserMissionProgressColumns.LastProgressUpdatedAt,
 			models.UserMissionProgressColumns.UpdatedAt,
 		}); err != nil {
 			return err
@@ -129,7 +133,7 @@ func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID 
 
 		// ミッションの達成日時更新
 		um := ccm.R.Mission.R.UserMissions[0]
-		um.CompletedAt = null.TimeFrom(completedAt)
+		um.CompletedAt = null.TimeFrom(requestedAt)
 		if err := u.userMissionRepository.Update(ctx, um, []string{
 			models.UserMissionColumns.CompletedAt,
 			models.UserMissionColumns.UpdatedAt,

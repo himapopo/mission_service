@@ -26,92 +26,82 @@ type UserMissionProgress struct {
 	ID int64 `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// ユーザーID
 	UserMissionID int64 `boil:"user_mission_id" json:"user_mission_id" toml:"user_mission_id" yaml:"user_mission_id"`
-	// ミッションID
-	MissionID int64 `boil:"mission_id" json:"mission_id" toml:"mission_id" yaml:"mission_id"`
 	// 達成条件に関する現在の値
-	ProgressValue int64     `boil:"progress_value" json:"progress_value" toml:"progress_value" yaml:"progress_value"`
-	UpdatedAt     time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	CreatedAt     time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	ProgressValue int64 `boil:"progress_value" json:"progress_value" toml:"progress_value" yaml:"progress_value"`
+	// 最終進捗更新日時
+	LastProgressUpdatedAt time.Time `boil:"last_progress_updated_at" json:"last_progress_updated_at" toml:"last_progress_updated_at" yaml:"last_progress_updated_at"`
+	UpdatedAt             time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	CreatedAt             time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
 	R *userMissionProgressR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userMissionProgressL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var UserMissionProgressColumns = struct {
-	ID            string
-	UserMissionID string
-	MissionID     string
-	ProgressValue string
-	UpdatedAt     string
-	CreatedAt     string
+	ID                    string
+	UserMissionID         string
+	ProgressValue         string
+	LastProgressUpdatedAt string
+	UpdatedAt             string
+	CreatedAt             string
 }{
-	ID:            "id",
-	UserMissionID: "user_mission_id",
-	MissionID:     "mission_id",
-	ProgressValue: "progress_value",
-	UpdatedAt:     "updated_at",
-	CreatedAt:     "created_at",
+	ID:                    "id",
+	UserMissionID:         "user_mission_id",
+	ProgressValue:         "progress_value",
+	LastProgressUpdatedAt: "last_progress_updated_at",
+	UpdatedAt:             "updated_at",
+	CreatedAt:             "created_at",
 }
 
 var UserMissionProgressTableColumns = struct {
-	ID            string
-	UserMissionID string
-	MissionID     string
-	ProgressValue string
-	UpdatedAt     string
-	CreatedAt     string
+	ID                    string
+	UserMissionID         string
+	ProgressValue         string
+	LastProgressUpdatedAt string
+	UpdatedAt             string
+	CreatedAt             string
 }{
-	ID:            "user_mission_progresses.id",
-	UserMissionID: "user_mission_progresses.user_mission_id",
-	MissionID:     "user_mission_progresses.mission_id",
-	ProgressValue: "user_mission_progresses.progress_value",
-	UpdatedAt:     "user_mission_progresses.updated_at",
-	CreatedAt:     "user_mission_progresses.created_at",
+	ID:                    "user_mission_progresses.id",
+	UserMissionID:         "user_mission_progresses.user_mission_id",
+	ProgressValue:         "user_mission_progresses.progress_value",
+	LastProgressUpdatedAt: "user_mission_progresses.last_progress_updated_at",
+	UpdatedAt:             "user_mission_progresses.updated_at",
+	CreatedAt:             "user_mission_progresses.created_at",
 }
 
 // Generated where
 
 var UserMissionProgressWhere = struct {
-	ID            whereHelperint64
-	UserMissionID whereHelperint64
-	MissionID     whereHelperint64
-	ProgressValue whereHelperint64
-	UpdatedAt     whereHelpertime_Time
-	CreatedAt     whereHelpertime_Time
+	ID                    whereHelperint64
+	UserMissionID         whereHelperint64
+	ProgressValue         whereHelperint64
+	LastProgressUpdatedAt whereHelpertime_Time
+	UpdatedAt             whereHelpertime_Time
+	CreatedAt             whereHelpertime_Time
 }{
-	ID:            whereHelperint64{field: "\"user_mission_progresses\".\"id\""},
-	UserMissionID: whereHelperint64{field: "\"user_mission_progresses\".\"user_mission_id\""},
-	MissionID:     whereHelperint64{field: "\"user_mission_progresses\".\"mission_id\""},
-	ProgressValue: whereHelperint64{field: "\"user_mission_progresses\".\"progress_value\""},
-	UpdatedAt:     whereHelpertime_Time{field: "\"user_mission_progresses\".\"updated_at\""},
-	CreatedAt:     whereHelpertime_Time{field: "\"user_mission_progresses\".\"created_at\""},
+	ID:                    whereHelperint64{field: "\"user_mission_progresses\".\"id\""},
+	UserMissionID:         whereHelperint64{field: "\"user_mission_progresses\".\"user_mission_id\""},
+	ProgressValue:         whereHelperint64{field: "\"user_mission_progresses\".\"progress_value\""},
+	LastProgressUpdatedAt: whereHelpertime_Time{field: "\"user_mission_progresses\".\"last_progress_updated_at\""},
+	UpdatedAt:             whereHelpertime_Time{field: "\"user_mission_progresses\".\"updated_at\""},
+	CreatedAt:             whereHelpertime_Time{field: "\"user_mission_progresses\".\"created_at\""},
 }
 
 // UserMissionProgressRels is where relationship names are stored.
 var UserMissionProgressRels = struct {
-	Mission     string
 	UserMission string
 }{
-	Mission:     "Mission",
 	UserMission: "UserMission",
 }
 
 // userMissionProgressR is where relationships are stored.
 type userMissionProgressR struct {
-	Mission     *Mission     `boil:"Mission" json:"Mission" toml:"Mission" yaml:"Mission"`
 	UserMission *UserMission `boil:"UserMission" json:"UserMission" toml:"UserMission" yaml:"UserMission"`
 }
 
 // NewStruct creates a new relationship struct
 func (*userMissionProgressR) NewStruct() *userMissionProgressR {
 	return &userMissionProgressR{}
-}
-
-func (r *userMissionProgressR) GetMission() *Mission {
-	if r == nil {
-		return nil
-	}
-	return r.Mission
 }
 
 func (r *userMissionProgressR) GetUserMission() *UserMission {
@@ -125,9 +115,9 @@ func (r *userMissionProgressR) GetUserMission() *UserMission {
 type userMissionProgressL struct{}
 
 var (
-	userMissionProgressAllColumns            = []string{"id", "user_mission_id", "mission_id", "progress_value", "updated_at", "created_at"}
-	userMissionProgressColumnsWithoutDefault = []string{"user_mission_id", "mission_id"}
-	userMissionProgressColumnsWithDefault    = []string{"id", "progress_value", "updated_at", "created_at"}
+	userMissionProgressAllColumns            = []string{"id", "user_mission_id", "progress_value", "last_progress_updated_at", "updated_at", "created_at"}
+	userMissionProgressColumnsWithoutDefault = []string{"user_mission_id"}
+	userMissionProgressColumnsWithDefault    = []string{"id", "progress_value", "last_progress_updated_at", "updated_at", "created_at"}
 	userMissionProgressPrimaryKeyColumns     = []string{"id"}
 	userMissionProgressGeneratedColumns      = []string{}
 )
@@ -410,17 +400,6 @@ func (q userMissionProgressQuery) Exists(ctx context.Context, exec boil.ContextE
 	return count > 0, nil
 }
 
-// Mission pointed to by the foreign key.
-func (o *UserMissionProgress) Mission(mods ...qm.QueryMod) missionQuery {
-	queryMods := []qm.QueryMod{
-		qm.Where("\"id\" = ?", o.MissionID),
-	}
-
-	queryMods = append(queryMods, mods...)
-
-	return Missions(queryMods...)
-}
-
 // UserMission pointed to by the foreign key.
 func (o *UserMissionProgress) UserMission(mods ...qm.QueryMod) userMissionQuery {
 	queryMods := []qm.QueryMod{
@@ -430,126 +409,6 @@ func (o *UserMissionProgress) UserMission(mods ...qm.QueryMod) userMissionQuery 
 	queryMods = append(queryMods, mods...)
 
 	return UserMissions(queryMods...)
-}
-
-// LoadMission allows an eager lookup of values, cached into the
-// loaded structs of the objects. This is for an N-1 relationship.
-func (userMissionProgressL) LoadMission(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserMissionProgress interface{}, mods queries.Applicator) error {
-	var slice []*UserMissionProgress
-	var object *UserMissionProgress
-
-	if singular {
-		var ok bool
-		object, ok = maybeUserMissionProgress.(*UserMissionProgress)
-		if !ok {
-			object = new(UserMissionProgress)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeUserMissionProgress)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUserMissionProgress))
-			}
-		}
-	} else {
-		s, ok := maybeUserMissionProgress.(*[]*UserMissionProgress)
-		if ok {
-			slice = *s
-		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeUserMissionProgress)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUserMissionProgress))
-			}
-		}
-	}
-
-	args := make([]interface{}, 0, 1)
-	if singular {
-		if object.R == nil {
-			object.R = &userMissionProgressR{}
-		}
-		args = append(args, object.MissionID)
-
-	} else {
-	Outer:
-		for _, obj := range slice {
-			if obj.R == nil {
-				obj.R = &userMissionProgressR{}
-			}
-
-			for _, a := range args {
-				if a == obj.MissionID {
-					continue Outer
-				}
-			}
-
-			args = append(args, obj.MissionID)
-
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	query := NewQuery(
-		qm.From(`missions`),
-		qm.WhereIn(`missions.id in ?`, args...),
-	)
-	if mods != nil {
-		mods.Apply(query)
-	}
-
-	results, err := query.QueryContext(ctx, e)
-	if err != nil {
-		return errors.Wrap(err, "failed to eager load Mission")
-	}
-
-	var resultSlice []*Mission
-	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice Mission")
-	}
-
-	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for missions")
-	}
-	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for missions")
-	}
-
-	if len(missionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(resultSlice) == 0 {
-		return nil
-	}
-
-	if singular {
-		foreign := resultSlice[0]
-		object.R.Mission = foreign
-		if foreign.R == nil {
-			foreign.R = &missionR{}
-		}
-		foreign.R.UserMissionProgresses = append(foreign.R.UserMissionProgresses, object)
-		return nil
-	}
-
-	for _, local := range slice {
-		for _, foreign := range resultSlice {
-			if local.MissionID == foreign.ID {
-				local.R.Mission = foreign
-				if foreign.R == nil {
-					foreign.R = &missionR{}
-				}
-				foreign.R.UserMissionProgresses = append(foreign.R.UserMissionProgresses, local)
-				break
-			}
-		}
-	}
-
-	return nil
 }
 
 // LoadUserMission allows an eager lookup of values, cached into the
@@ -667,53 +526,6 @@ func (userMissionProgressL) LoadUserMission(ctx context.Context, e boil.ContextE
 				break
 			}
 		}
-	}
-
-	return nil
-}
-
-// SetMission of the userMissionProgress to the related item.
-// Sets o.R.Mission to related.
-// Adds o to related.R.UserMissionProgresses.
-func (o *UserMissionProgress) SetMission(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Mission) error {
-	var err error
-	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "failed to insert into foreign table")
-		}
-	}
-
-	updateQuery := fmt.Sprintf(
-		"UPDATE \"user_mission_progresses\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 1, []string{"mission_id"}),
-		strmangle.WhereClause("\"", "\"", 2, userMissionProgressPrimaryKeyColumns),
-	)
-	values := []interface{}{related.ID, o.ID}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, updateQuery)
-		fmt.Fprintln(writer, values)
-	}
-	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	o.MissionID = related.ID
-	if o.R == nil {
-		o.R = &userMissionProgressR{
-			Mission: related,
-		}
-	} else {
-		o.R.Mission = related
-	}
-
-	if related.R == nil {
-		related.R = &missionR{
-			UserMissionProgresses: UserMissionProgressSlice{o},
-		}
-	} else {
-		related.R.UserMissionProgresses = append(related.R.UserMissionProgresses, o)
 	}
 
 	return nil

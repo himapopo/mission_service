@@ -39,7 +39,7 @@ func NewWeeklyMissionUsecase(
 }
 
 // 任意のモンスター討伐数ミッション達成チェック
-func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, userID int64, completedAt time.Time) error {
+func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	mkcms, err := u.monsterKillCountMissionRepository.FetchWeeklyByUserID(ctx, userID)
 	if err != nil {
 		return err
@@ -48,11 +48,15 @@ func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, 
 	for _, mkcm := range mkcms {
 		ump := mkcm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
 		um := mkcm.R.Mission.R.UserMissions[0]
-		if ump.UpdatedAt.Before(timeutils.WeeklyMissionResetTime(completedAt)) {
+
+		ump.LastProgressUpdatedAt = requestedAt
+
+		if ump.LastProgressUpdatedAt.Before(timeutils.WeeklyMissionResetTime(requestedAt)) {
 			// 今週初めてのモンスター討伐
 			ump.ProgressValue = 1
 			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 				models.UserMissionProgressColumns.ProgressValue,
+				models.UserMissionProgressColumns.LastProgressUpdatedAt,
 				models.UserMissionProgressColumns.UpdatedAt,
 			}); err != nil {
 				return err
@@ -65,24 +69,25 @@ func (u weeklyMissionUsecase) CheckMonsterKillCountMission(ctx context.Context, 
 			}); err != nil {
 				return err
 			}
-		} else {
+		} else if mkcm.KillCount > ump.ProgressValue {
 			// 今週2体目以降のモンスター討伐
 			ump.ProgressValue += 1
 			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 				models.UserMissionProgressColumns.ProgressValue,
+				models.UserMissionProgressColumns.LastProgressUpdatedAt,
 				models.UserMissionProgressColumns.UpdatedAt,
 			}); err != nil {
 				return err
 			}
 		}
 
-		// ミッションの達成条件に満たない場合
-		if mkcm.KillCount > ump.ProgressValue {
+		// ミッション達成済み or 達成条件に満たない場合はcontinue
+		if um.CompletedAt.Valid || mkcm.KillCount > ump.ProgressValue {
 			continue
 		}
 
 		// ミッションの達成日時更新
-		um.CompletedAt = null.TimeFrom(completedAt)
+		um.CompletedAt = null.TimeFrom(requestedAt)
 		if err := u.userMissionRepository.Update(ctx, um, []string{
 			models.UserMissionColumns.CompletedAt,
 			models.UserMissionColumns.UpdatedAt,
