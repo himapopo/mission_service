@@ -40,7 +40,7 @@ make test-data-init
 
 # ER図
 
-![mission_service - public](https://user-images.githubusercontent.com/62779514/230784240-aef48956-e008-4fa7-99e4-9d57781a9780.png)
+![mission_service - public1](https://user-images.githubusercontent.com/62779514/230787447-c20c1050-e442-4248-8e9e-a1ab23cbb456.png)
 
 # ストーリー
 ※データを確認できるエンドポイントを用意できていないので、GUIツールなどからデータの確認をお願いいたします。

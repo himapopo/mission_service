@@ -26,7 +26,7 @@ type User struct {
 	ID int64 `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// 名前
 	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	// 獲得コイン数
+	// 所有コイン数
 	CoinCount int64 `boil:"coin_count" json:"coin_count" toml:"coin_count" yaml:"coin_count"`
 	// 最終ログイン日時
 	LastLoginAt time.Time `boil:"last_login_at" json:"last_login_at" toml:"last_login_at" yaml:"last_login_at"`

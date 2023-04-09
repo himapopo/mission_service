@@ -13,7 +13,7 @@ create table if not exists users(
 
 comment on table users is 'ユーザー';
 comment on column users.name is '名前';
-comment on column users.coin_count is '獲得コイン数';
+comment on column users.coin_count is '所有コイン数';
 comment on column users.last_login_at is '最終ログイン日時';
 -- +migrate Down
 drop table if exists users;
