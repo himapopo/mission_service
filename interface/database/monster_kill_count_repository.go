@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type monsterKillCountMissionRepostitory struct {
+type monsterKillCountMissionRepository struct {
 	dbUtil
 }
 
-func NewMonsterKillCountMissionRepostitory(dbUtil dbUtil) monsterKillCountMissionRepostitory {
-	return monsterKillCountMissionRepostitory{
+func NewMonsterKillCountMissionRepository(dbUtil dbUtil) monsterKillCountMissionRepository {
+	return monsterKillCountMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r monsterKillCountMissionRepostitory) FetchWeeklyByUserID(ctx context.Context, userID int64) ([]*models.MonsterKillCountMission, error) {
+func (r monsterKillCountMissionRepository) FetchWeeklyByUserID(ctx context.Context, userID int64) ([]*models.MonsterKillCountMission, error) {
 	results, err := models.MonsterKillCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,

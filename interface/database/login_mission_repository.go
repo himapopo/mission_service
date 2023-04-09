@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type loginMissionRepostitory struct {
+type loginMissionRepository struct {
 	dbUtil
 }
 
-func NewLoginMissionRepostitory(dbUtil dbUtil) loginMissionRepostitory {
-	return loginMissionRepostitory{
+func NewLoginMissionRepository(dbUtil dbUtil) loginMissionRepository {
+	return loginMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r loginMissionRepostitory) FetchByUserIDAndLoginCount(ctx context.Context, userID, loginCount int64) (*models.LoginMission, error) {
+func (r loginMissionRepository) FetchByUserIDAndLoginCount(ctx context.Context, userID, loginCount int64) (*models.LoginMission, error) {
 	result, err := models.LoginMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,

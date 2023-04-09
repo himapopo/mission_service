@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type coinCountMissionRepostitory struct {
+type coinCountMissionRepository struct {
 	dbUtil
 }
 
-func NewCoinCountMissionRepostitory(dbUtil dbUtil) coinCountMissionRepostitory {
-	return coinCountMissionRepostitory{
+func NewCoinCountMissionRepository(dbUtil dbUtil) coinCountMissionRepository {
+	return coinCountMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r coinCountMissionRepostitory) FetchNotCompletedByUserID(ctx context.Context, userID int64) ([]*models.CoinCountMission, error) {
+func (r coinCountMissionRepository) FetchNotCompletedByUserID(ctx context.Context, userID int64) ([]*models.CoinCountMission, error) {
 	results, err := models.CoinCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,

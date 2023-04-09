@@ -8,17 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type monsterLevelUpMissionRepostitory struct {
+type monsterLevelUpMissionRepository struct {
 	dbUtil
 }
 
-func NewMonsterLevelUpMissionRepostitory(dbUtil dbUtil) monsterLevelUpMissionRepostitory {
-	return monsterLevelUpMissionRepostitory{
+func NewMonsterLevelUpMissionRepository(dbUtil dbUtil) monsterLevelUpMissionRepository {
+	return monsterLevelUpMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r monsterLevelUpMissionRepostitory) FetchNotCompletedByUserIDAndMonsterID(ctx context.Context, userID, monsterID int64) ([]*models.MonsterLevelUpMission, error) {
+func (r monsterLevelUpMissionRepository) FetchNotCompletedByUserIDAndMonsterID(ctx context.Context, userID, monsterID int64) ([]*models.MonsterLevelUpMission, error) {
 	results, err := models.MonsterLevelUpMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,

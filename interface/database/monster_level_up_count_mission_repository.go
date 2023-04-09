@@ -8,24 +8,24 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type monsterKillMissionRepository struct {
+type monsterLevelUpCountMissionRepository struct {
 	dbUtil
 }
 
-func NewMonsterKillMissionRepository(dbUtil dbUtil) monsterKillMissionRepository {
-	return monsterKillMissionRepository{
+func NewMonsterLevelUpCountMissionRepository(dbUtil dbUtil) monsterLevelUpCountMissionRepository {
+	return monsterLevelUpCountMissionRepository{
 		dbUtil: dbUtil,
 	}
 }
 
-func (r monsterKillMissionRepository) FetchNotCompletedByUserIDAndMonsterID(ctx context.Context, userID, monsterID int64) (*models.MonsterKillMission, error) {
-	result, err := models.MonsterKillMissions(
+func (r monsterLevelUpCountMissionRepository) FetchNotCompletedByUserID(ctx context.Context, userID int64) ([]*models.MonsterLevelUpCountMission, error) {
+	results, err := models.MonsterLevelUpCountMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
 			models.TableNames.Missions,
 			models.MissionColumns.ID,
-			models.TableNames.MonsterKillMissions,
-			models.MonsterKillMissionColumns.MissionID,
+			models.TableNames.MonsterLevelUpCountMissions,
+			models.MonsterLevelUpCountMissionColumns.MissionID,
 		),
 		),
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
@@ -37,42 +37,41 @@ func (r monsterKillMissionRepository) FetchNotCompletedByUserIDAndMonsterID(ctx 
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
-		models.MonsterKillMissionWhere.MonsterID.EQ(monsterID),
 		models.UserMissionWhere.UserID.EQ(userID),
 		models.UserMissionWhere.CompletedAt.IsNull(),
 		qm.Load(
 			qm.Rels(
-				models.MonsterKillMissionRels.Mission,
+				models.MonsterLevelUpCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 			),
 			models.UserMissionWhere.UserID.EQ(userID),
 		),
 		qm.Load(
 			qm.Rels(
-				models.MonsterKillMissionRels.Mission,
+				models.MonsterLevelUpCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.User,
 			),
 		),
 		qm.Load(
 			qm.Rels(
-				models.MonsterKillMissionRels.Mission,
+				models.MonsterLevelUpCountMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.UserMissionProgresses,
 			),
 		),
 		qm.Load(
 			qm.Rels(
-				models.MonsterKillMissionRels.Mission,
+				models.MonsterLevelUpCountMissionRels.Mission,
 				models.MissionRels.MissionRewardCoins,
 			),
 		),
 		qm.Load(
 			qm.Rels(
-				models.MonsterKillMissionRels.Mission,
+				models.MonsterLevelUpCountMissionRels.Mission,
 				models.MissionRels.MissionRewardItems,
 			),
 		),
-	).One(ctx, r.GetDao(ctx))
-	return result, r.Error(err)
+	).All(ctx, r.GetDao(ctx))
+	return results, r.Error(err)
 }

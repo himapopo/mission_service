@@ -87,6 +87,11 @@ func (u eventUsecase) MonsterLevelUp(ctx context.Context, params dto.MonsterLeve
 			return err
 		}
 
+		// 一定レベル以上のモンスター獲得ミッション達成チェック
+		if err := u.normalMissionUsecase.MonsterLevelUpCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
+			return err
+		}
+
 		// コイン獲得枚数ミッション達成チェック
 		if err := u.normalMissionUsecase.CoinCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
 			return err
