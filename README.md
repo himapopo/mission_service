@@ -12,9 +12,10 @@
 - air(hot reload)
 
 # 実行方法
-1. git clone
+1. git cloneして移動
 ```sh
 git clone git@github.com:himapopo/mission_service.git
+cd mission_service
 ```
 2. .envファイルを作成
 ```sh
