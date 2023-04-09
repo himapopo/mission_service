@@ -42,28 +42,28 @@ func main() {
 	missionRewardUsecase := mission.NewMissionRewardUsecase(
 		userRepository,
 		userItemRepository,
+		coinCountMissionRepository,
+		userMissionRepository,
+		userMissionProgressRepository,
+		getItemMissionRepository,
+		missionReleaseUsecase,
 	)
 
 	weeklyMissionUsecase := mission.NewWeeklyMissionUsecase(
 		monsterkillCountMissionRepository,
-		userRepository,
 		userMissionRepository,
 		userMissionProgressRepository,
 		missionRewardUsecase,
 		missionReleaseUsecase,
 	)
 
-	normalMissionUsecase := mission.NewNormailMissionUsecase(
-		coinCountMissionRepository,
-		userRepository,
-		userItemRepository,
+	normalMissionUsecase := mission.NewNormalMissionUsecase(
 		userMissionRepository,
 		userMissionProgressRepository,
 		userMonsterRepository,
 		monsterkillMissionRepository,
 		monsterLevelUpMissionRepository,
 		monsterLevelUpCountMissionRepository,
-		getItemMissionRepository,
 		missionRewardUsecase,
 		missionReleaseUsecase,
 	)
@@ -72,6 +72,7 @@ func main() {
 		userRepository,
 		loginMissionRepository,
 		userMissionRepository,
+		userMissionProgressRepository,
 		missionRewardUsecase,
 		normalMissionUsecase,
 		missionReleaseUsecase,

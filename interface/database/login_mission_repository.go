@@ -18,7 +18,7 @@ func NewLoginMissionRepository(dbUtil dbUtil) loginMissionRepository {
 	}
 }
 
-func (r loginMissionRepository) FetchByUserIDAndLoginCount(ctx context.Context, userID, loginCount int64) (*models.LoginMission, error) {
+func (r loginMissionRepository) FetchDailyByUserID(ctx context.Context, userID int64) (*models.LoginMission, error) {
 	result, err := models.LoginMissions(
 		qm.InnerJoin(fmt.Sprintf("%s on %s.%s = %s.%s",
 			models.TableNames.Missions,
@@ -37,7 +37,7 @@ func (r loginMissionRepository) FetchByUserIDAndLoginCount(ctx context.Context, 
 		),
 		),
 		models.MissionWhere.IsDeleted.EQ(false),
-		models.LoginMissionWhere.LoginCount.EQ(loginCount),
+		models.MissionWhere.MissionType.EQ("daily"),
 		models.UserMissionWhere.UserID.EQ(userID),
 		qm.Load(
 			qm.Rels(
@@ -51,6 +51,13 @@ func (r loginMissionRepository) FetchByUserIDAndLoginCount(ctx context.Context, 
 				models.LoginMissionRels.Mission,
 				models.MissionRels.UserMissions,
 				models.UserMissionRels.User,
+			),
+		),
+		qm.Load(
+			qm.Rels(
+				models.LoginMissionRels.Mission,
+				models.MissionRels.UserMissions,
+				models.UserMissionRels.UserMissionProgresses,
 			),
 		),
 		qm.Load(

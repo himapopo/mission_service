@@ -1,5 +1,6 @@
 package dto
 
 type Response struct {
-	Error string `json:"error"`
+	Result bool   `json:"result"`
+	Error  string `json:"error"`
 }

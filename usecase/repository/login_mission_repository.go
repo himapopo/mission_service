@@ -6,5 +6,5 @@ import (
 )
 
 type LoginMissionRepository interface {
-	FetchByUserIDAndLoginCount(context.Context, int64, int64) (*models.LoginMission, error)
+	FetchDailyByUserID(context.Context, int64) (*models.LoginMission, error)
 }
