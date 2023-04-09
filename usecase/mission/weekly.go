@@ -52,11 +52,10 @@ func (u weeklyMissionUsecase) MonsterKillCountMission(ctx context.Context, userI
 		ump := mkcm.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
 		um := mkcm.R.Mission.R.UserMissions[0]
 
-		ump.LastProgressUpdatedAt = requestedAt
-
 		if ump.LastProgressUpdatedAt.Before(timeutils.WeeklyMissionResetTime(requestedAt)) {
 			// 今週初めてのモンスター討伐
 			ump.ProgressValue = 1
+			ump.LastProgressUpdatedAt = requestedAt
 			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 				models.UserMissionProgressColumns.ProgressValue,
 				models.UserMissionProgressColumns.LastProgressUpdatedAt,
@@ -75,6 +74,7 @@ func (u weeklyMissionUsecase) MonsterKillCountMission(ctx context.Context, userI
 		} else if mkcm.KillCount > ump.ProgressValue {
 			// 今週2体目以降のモンスター討伐
 			ump.ProgressValue += 1
+			ump.LastProgressUpdatedAt = requestedAt
 			if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
 				models.UserMissionProgressColumns.ProgressValue,
 				models.UserMissionProgressColumns.LastProgressUpdatedAt,
