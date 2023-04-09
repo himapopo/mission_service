@@ -25,3 +25,10 @@ func (r userRepostitory) Update(ctx context.Context, m *models.User, updateColum
 	}
 	return r.Error(err)
 }
+
+func (r userRepostitory) Fetch(ctx context.Context, id int64) (*models.User, error) {
+	result, err := models.Users(
+		models.UserWhere.ID.EQ(id),
+	).One(ctx, r.GetDao(ctx))
+	return result, r.Error(err)
+}

@@ -6,5 +6,5 @@ import (
 )
 
 type CoinCountMissionRepository interface {
-	FetchNotCompletedByUserIDAndCoinCount(context.Context, int64, int64) ([]*models.CoinCountMission, error)
+	FetchNotCompletedByUserID(context.Context, int64) ([]*models.CoinCountMission, error)
 }

@@ -27,56 +27,64 @@ type MonsterKillMission struct {
 	// ミッションID
 	MissionID int64 `boil:"mission_id" json:"mission_id" toml:"mission_id" yaml:"mission_id"`
 	// 対象モンスターID
-	MonsterID int64     `boil:"monster_id" json:"monster_id" toml:"monster_id" yaml:"monster_id"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	MonsterID int64 `boil:"monster_id" json:"monster_id" toml:"monster_id" yaml:"monster_id"`
+	// 討伐必要数
+	MonsterCount int64     `boil:"monster_count" json:"monster_count" toml:"monster_count" yaml:"monster_count"`
+	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
 	R *monsterKillMissionR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L monsterKillMissionL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var MonsterKillMissionColumns = struct {
-	ID        string
-	MissionID string
-	MonsterID string
-	UpdatedAt string
-	CreatedAt string
+	ID           string
+	MissionID    string
+	MonsterID    string
+	MonsterCount string
+	UpdatedAt    string
+	CreatedAt    string
 }{
-	ID:        "id",
-	MissionID: "mission_id",
-	MonsterID: "monster_id",
-	UpdatedAt: "updated_at",
-	CreatedAt: "created_at",
+	ID:           "id",
+	MissionID:    "mission_id",
+	MonsterID:    "monster_id",
+	MonsterCount: "monster_count",
+	UpdatedAt:    "updated_at",
+	CreatedAt:    "created_at",
 }
 
 var MonsterKillMissionTableColumns = struct {
-	ID        string
-	MissionID string
-	MonsterID string
-	UpdatedAt string
-	CreatedAt string
+	ID           string
+	MissionID    string
+	MonsterID    string
+	MonsterCount string
+	UpdatedAt    string
+	CreatedAt    string
 }{
-	ID:        "monster_kill_missions.id",
-	MissionID: "monster_kill_missions.mission_id",
-	MonsterID: "monster_kill_missions.monster_id",
-	UpdatedAt: "monster_kill_missions.updated_at",
-	CreatedAt: "monster_kill_missions.created_at",
+	ID:           "monster_kill_missions.id",
+	MissionID:    "monster_kill_missions.mission_id",
+	MonsterID:    "monster_kill_missions.monster_id",
+	MonsterCount: "monster_kill_missions.monster_count",
+	UpdatedAt:    "monster_kill_missions.updated_at",
+	CreatedAt:    "monster_kill_missions.created_at",
 }
 
 // Generated where
 
 var MonsterKillMissionWhere = struct {
-	ID        whereHelperint64
-	MissionID whereHelperint64
-	MonsterID whereHelperint64
-	UpdatedAt whereHelpertime_Time
-	CreatedAt whereHelpertime_Time
+	ID           whereHelperint64
+	MissionID    whereHelperint64
+	MonsterID    whereHelperint64
+	MonsterCount whereHelperint64
+	UpdatedAt    whereHelpertime_Time
+	CreatedAt    whereHelpertime_Time
 }{
-	ID:        whereHelperint64{field: "\"monster_kill_missions\".\"id\""},
-	MissionID: whereHelperint64{field: "\"monster_kill_missions\".\"mission_id\""},
-	MonsterID: whereHelperint64{field: "\"monster_kill_missions\".\"monster_id\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"monster_kill_missions\".\"updated_at\""},
-	CreatedAt: whereHelpertime_Time{field: "\"monster_kill_missions\".\"created_at\""},
+	ID:           whereHelperint64{field: "\"monster_kill_missions\".\"id\""},
+	MissionID:    whereHelperint64{field: "\"monster_kill_missions\".\"mission_id\""},
+	MonsterID:    whereHelperint64{field: "\"monster_kill_missions\".\"monster_id\""},
+	MonsterCount: whereHelperint64{field: "\"monster_kill_missions\".\"monster_count\""},
+	UpdatedAt:    whereHelpertime_Time{field: "\"monster_kill_missions\".\"updated_at\""},
+	CreatedAt:    whereHelpertime_Time{field: "\"monster_kill_missions\".\"created_at\""},
 }
 
 // MonsterKillMissionRels is where relationship names are stored.
@@ -117,8 +125,8 @@ func (r *monsterKillMissionR) GetMonster() *Monster {
 type monsterKillMissionL struct{}
 
 var (
-	monsterKillMissionAllColumns            = []string{"id", "mission_id", "monster_id", "updated_at", "created_at"}
-	monsterKillMissionColumnsWithoutDefault = []string{"mission_id", "monster_id"}
+	monsterKillMissionAllColumns            = []string{"id", "mission_id", "monster_id", "monster_count", "updated_at", "created_at"}
+	monsterKillMissionColumnsWithoutDefault = []string{"mission_id", "monster_id", "monster_count"}
 	monsterKillMissionColumnsWithDefault    = []string{"id", "updated_at", "created_at"}
 	monsterKillMissionPrimaryKeyColumns     = []string{"id"}
 	monsterKillMissionGeneratedColumns      = []string{}

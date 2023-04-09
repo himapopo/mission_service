@@ -7,4 +7,5 @@ import (
 
 type UserRepository interface {
 	Update(context.Context, *models.User, []string) error
+	Fetch(context.Context, int64) (*models.User, error)
 }

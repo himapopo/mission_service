@@ -26,6 +26,8 @@ type Mission struct {
 	ID int64 `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// 名前
 	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
+	// ミッションの種類
+	MissionType string `boil:"mission_type" json:"mission_type" toml:"mission_type" yaml:"mission_type"`
 	// 削除フラグ
 	IsDeleted bool      `boil:"is_deleted" json:"is_deleted" toml:"is_deleted" yaml:"is_deleted"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
@@ -36,31 +38,35 @@ type Mission struct {
 }
 
 var MissionColumns = struct {
-	ID        string
-	Name      string
-	IsDeleted string
-	UpdatedAt string
-	CreatedAt string
+	ID          string
+	Name        string
+	MissionType string
+	IsDeleted   string
+	UpdatedAt   string
+	CreatedAt   string
 }{
-	ID:        "id",
-	Name:      "name",
-	IsDeleted: "is_deleted",
-	UpdatedAt: "updated_at",
-	CreatedAt: "created_at",
+	ID:          "id",
+	Name:        "name",
+	MissionType: "mission_type",
+	IsDeleted:   "is_deleted",
+	UpdatedAt:   "updated_at",
+	CreatedAt:   "created_at",
 }
 
 var MissionTableColumns = struct {
-	ID        string
-	Name      string
-	IsDeleted string
-	UpdatedAt string
-	CreatedAt string
+	ID          string
+	Name        string
+	MissionType string
+	IsDeleted   string
+	UpdatedAt   string
+	CreatedAt   string
 }{
-	ID:        "missions.id",
-	Name:      "missions.name",
-	IsDeleted: "missions.is_deleted",
-	UpdatedAt: "missions.updated_at",
-	CreatedAt: "missions.created_at",
+	ID:          "missions.id",
+	Name:        "missions.name",
+	MissionType: "missions.mission_type",
+	IsDeleted:   "missions.is_deleted",
+	UpdatedAt:   "missions.updated_at",
+	CreatedAt:   "missions.created_at",
 }
 
 // Generated where
@@ -75,56 +81,58 @@ func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field
 func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
 var MissionWhere = struct {
-	ID        whereHelperint64
-	Name      whereHelperstring
-	IsDeleted whereHelperbool
-	UpdatedAt whereHelpertime_Time
-	CreatedAt whereHelpertime_Time
+	ID          whereHelperint64
+	Name        whereHelperstring
+	MissionType whereHelperstring
+	IsDeleted   whereHelperbool
+	UpdatedAt   whereHelpertime_Time
+	CreatedAt   whereHelpertime_Time
 }{
-	ID:        whereHelperint64{field: "\"missions\".\"id\""},
-	Name:      whereHelperstring{field: "\"missions\".\"name\""},
-	IsDeleted: whereHelperbool{field: "\"missions\".\"is_deleted\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"missions\".\"updated_at\""},
-	CreatedAt: whereHelpertime_Time{field: "\"missions\".\"created_at\""},
+	ID:          whereHelperint64{field: "\"missions\".\"id\""},
+	Name:        whereHelperstring{field: "\"missions\".\"name\""},
+	MissionType: whereHelperstring{field: "\"missions\".\"mission_type\""},
+	IsDeleted:   whereHelperbool{field: "\"missions\".\"is_deleted\""},
+	UpdatedAt:   whereHelpertime_Time{field: "\"missions\".\"updated_at\""},
+	CreatedAt:   whereHelpertime_Time{field: "\"missions\".\"created_at\""},
 }
 
 // MissionRels is where relationship names are stored.
 var MissionRels = struct {
-	CoinCountMission        string
-	GetItemMission          string
-	LoginMission            string
-	MonsterKillCountMission string
-	MonsterKillMission      string
-	MonsterLevelUpMission   string
-	MonstersLevelUpMission  string
-	MissionRewardCoins      string
-	MissionRewardItems      string
-	UserMissions            string
+	CoinCountMission           string
+	GetItemMission             string
+	LoginMission               string
+	MonsterKillCountMission    string
+	MonsterKillMission         string
+	MonsterLevelUpCountMission string
+	MonsterLevelUpMission      string
+	MissionRewardCoins         string
+	MissionRewardItems         string
+	UserMissions               string
 }{
-	CoinCountMission:        "CoinCountMission",
-	GetItemMission:          "GetItemMission",
-	LoginMission:            "LoginMission",
-	MonsterKillCountMission: "MonsterKillCountMission",
-	MonsterKillMission:      "MonsterKillMission",
-	MonsterLevelUpMission:   "MonsterLevelUpMission",
-	MonstersLevelUpMission:  "MonstersLevelUpMission",
-	MissionRewardCoins:      "MissionRewardCoins",
-	MissionRewardItems:      "MissionRewardItems",
-	UserMissions:            "UserMissions",
+	CoinCountMission:           "CoinCountMission",
+	GetItemMission:             "GetItemMission",
+	LoginMission:               "LoginMission",
+	MonsterKillCountMission:    "MonsterKillCountMission",
+	MonsterKillMission:         "MonsterKillMission",
+	MonsterLevelUpCountMission: "MonsterLevelUpCountMission",
+	MonsterLevelUpMission:      "MonsterLevelUpMission",
+	MissionRewardCoins:         "MissionRewardCoins",
+	MissionRewardItems:         "MissionRewardItems",
+	UserMissions:               "UserMissions",
 }
 
 // missionR is where relationships are stored.
 type missionR struct {
-	CoinCountMission        *CoinCountMission        `boil:"CoinCountMission" json:"CoinCountMission" toml:"CoinCountMission" yaml:"CoinCountMission"`
-	GetItemMission          *GetItemMission          `boil:"GetItemMission" json:"GetItemMission" toml:"GetItemMission" yaml:"GetItemMission"`
-	LoginMission            *LoginMission            `boil:"LoginMission" json:"LoginMission" toml:"LoginMission" yaml:"LoginMission"`
-	MonsterKillCountMission *MonsterKillCountMission `boil:"MonsterKillCountMission" json:"MonsterKillCountMission" toml:"MonsterKillCountMission" yaml:"MonsterKillCountMission"`
-	MonsterKillMission      *MonsterKillMission      `boil:"MonsterKillMission" json:"MonsterKillMission" toml:"MonsterKillMission" yaml:"MonsterKillMission"`
-	MonsterLevelUpMission   *MonsterLevelUpMission   `boil:"MonsterLevelUpMission" json:"MonsterLevelUpMission" toml:"MonsterLevelUpMission" yaml:"MonsterLevelUpMission"`
-	MonstersLevelUpMission  *MonstersLevelUpMission  `boil:"MonstersLevelUpMission" json:"MonstersLevelUpMission" toml:"MonstersLevelUpMission" yaml:"MonstersLevelUpMission"`
-	MissionRewardCoins      MissionRewardCoinSlice   `boil:"MissionRewardCoins" json:"MissionRewardCoins" toml:"MissionRewardCoins" yaml:"MissionRewardCoins"`
-	MissionRewardItems      MissionRewardItemSlice   `boil:"MissionRewardItems" json:"MissionRewardItems" toml:"MissionRewardItems" yaml:"MissionRewardItems"`
-	UserMissions            UserMissionSlice         `boil:"UserMissions" json:"UserMissions" toml:"UserMissions" yaml:"UserMissions"`
+	CoinCountMission           *CoinCountMission           `boil:"CoinCountMission" json:"CoinCountMission" toml:"CoinCountMission" yaml:"CoinCountMission"`
+	GetItemMission             *GetItemMission             `boil:"GetItemMission" json:"GetItemMission" toml:"GetItemMission" yaml:"GetItemMission"`
+	LoginMission               *LoginMission               `boil:"LoginMission" json:"LoginMission" toml:"LoginMission" yaml:"LoginMission"`
+	MonsterKillCountMission    *MonsterKillCountMission    `boil:"MonsterKillCountMission" json:"MonsterKillCountMission" toml:"MonsterKillCountMission" yaml:"MonsterKillCountMission"`
+	MonsterKillMission         *MonsterKillMission         `boil:"MonsterKillMission" json:"MonsterKillMission" toml:"MonsterKillMission" yaml:"MonsterKillMission"`
+	MonsterLevelUpCountMission *MonsterLevelUpCountMission `boil:"MonsterLevelUpCountMission" json:"MonsterLevelUpCountMission" toml:"MonsterLevelUpCountMission" yaml:"MonsterLevelUpCountMission"`
+	MonsterLevelUpMission      *MonsterLevelUpMission      `boil:"MonsterLevelUpMission" json:"MonsterLevelUpMission" toml:"MonsterLevelUpMission" yaml:"MonsterLevelUpMission"`
+	MissionRewardCoins         MissionRewardCoinSlice      `boil:"MissionRewardCoins" json:"MissionRewardCoins" toml:"MissionRewardCoins" yaml:"MissionRewardCoins"`
+	MissionRewardItems         MissionRewardItemSlice      `boil:"MissionRewardItems" json:"MissionRewardItems" toml:"MissionRewardItems" yaml:"MissionRewardItems"`
+	UserMissions               UserMissionSlice            `boil:"UserMissions" json:"UserMissions" toml:"UserMissions" yaml:"UserMissions"`
 }
 
 // NewStruct creates a new relationship struct
@@ -167,18 +175,18 @@ func (r *missionR) GetMonsterKillMission() *MonsterKillMission {
 	return r.MonsterKillMission
 }
 
+func (r *missionR) GetMonsterLevelUpCountMission() *MonsterLevelUpCountMission {
+	if r == nil {
+		return nil
+	}
+	return r.MonsterLevelUpCountMission
+}
+
 func (r *missionR) GetMonsterLevelUpMission() *MonsterLevelUpMission {
 	if r == nil {
 		return nil
 	}
 	return r.MonsterLevelUpMission
-}
-
-func (r *missionR) GetMonstersLevelUpMission() *MonstersLevelUpMission {
-	if r == nil {
-		return nil
-	}
-	return r.MonstersLevelUpMission
 }
 
 func (r *missionR) GetMissionRewardCoins() MissionRewardCoinSlice {
@@ -206,9 +214,9 @@ func (r *missionR) GetUserMissions() UserMissionSlice {
 type missionL struct{}
 
 var (
-	missionAllColumns            = []string{"id", "name", "is_deleted", "updated_at", "created_at"}
+	missionAllColumns            = []string{"id", "name", "mission_type", "is_deleted", "updated_at", "created_at"}
 	missionColumnsWithoutDefault = []string{"name"}
-	missionColumnsWithDefault    = []string{"id", "is_deleted", "updated_at", "created_at"}
+	missionColumnsWithDefault    = []string{"id", "mission_type", "is_deleted", "updated_at", "created_at"}
 	missionPrimaryKeyColumns     = []string{"id"}
 	missionGeneratedColumns      = []string{}
 )
@@ -546,6 +554,17 @@ func (o *Mission) MonsterKillMission(mods ...qm.QueryMod) monsterKillMissionQuer
 	return MonsterKillMissions(queryMods...)
 }
 
+// MonsterLevelUpCountMission pointed to by the foreign key.
+func (o *Mission) MonsterLevelUpCountMission(mods ...qm.QueryMod) monsterLevelUpCountMissionQuery {
+	queryMods := []qm.QueryMod{
+		qm.Where("\"mission_id\" = ?", o.ID),
+	}
+
+	queryMods = append(queryMods, mods...)
+
+	return MonsterLevelUpCountMissions(queryMods...)
+}
+
 // MonsterLevelUpMission pointed to by the foreign key.
 func (o *Mission) MonsterLevelUpMission(mods ...qm.QueryMod) monsterLevelUpMissionQuery {
 	queryMods := []qm.QueryMod{
@@ -555,17 +574,6 @@ func (o *Mission) MonsterLevelUpMission(mods ...qm.QueryMod) monsterLevelUpMissi
 	queryMods = append(queryMods, mods...)
 
 	return MonsterLevelUpMissions(queryMods...)
-}
-
-// MonstersLevelUpMission pointed to by the foreign key.
-func (o *Mission) MonstersLevelUpMission(mods ...qm.QueryMod) monstersLevelUpMissionQuery {
-	queryMods := []qm.QueryMod{
-		qm.Where("\"mission_id\" = ?", o.ID),
-	}
-
-	queryMods = append(queryMods, mods...)
-
-	return MonstersLevelUpMissions(queryMods...)
 }
 
 // MissionRewardCoins retrieves all the mission_reward_coin's MissionRewardCoins with an executor.
@@ -1195,6 +1203,123 @@ func (missionL) LoadMonsterKillMission(ctx context.Context, e boil.ContextExecut
 	return nil
 }
 
+// LoadMonsterLevelUpCountMission allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-1 relationship.
+func (missionL) LoadMonsterLevelUpCountMission(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
+	var slice []*Mission
+	var object *Mission
+
+	if singular {
+		var ok bool
+		object, ok = maybeMission.(*Mission)
+		if !ok {
+			object = new(Mission)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMission))
+			}
+		}
+	} else {
+		s, ok := maybeMission.(*[]*Mission)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMission))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &missionR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &missionR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`monster_level_up_count_missions`),
+		qm.WhereIn(`monster_level_up_count_missions.mission_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load MonsterLevelUpCountMission")
+	}
+
+	var resultSlice []*MonsterLevelUpCountMission
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice MonsterLevelUpCountMission")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results of eager load for monster_level_up_count_missions")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for monster_level_up_count_missions")
+	}
+
+	if len(monsterLevelUpCountMissionAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+
+	if len(resultSlice) == 0 {
+		return nil
+	}
+
+	if singular {
+		foreign := resultSlice[0]
+		object.R.MonsterLevelUpCountMission = foreign
+		if foreign.R == nil {
+			foreign.R = &monsterLevelUpCountMissionR{}
+		}
+		foreign.R.Mission = object
+	}
+
+	for _, local := range slice {
+		for _, foreign := range resultSlice {
+			if local.ID == foreign.MissionID {
+				local.R.MonsterLevelUpCountMission = foreign
+				if foreign.R == nil {
+					foreign.R = &monsterLevelUpCountMissionR{}
+				}
+				foreign.R.Mission = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // LoadMonsterLevelUpMission allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-1 relationship.
 func (missionL) LoadMonsterLevelUpMission(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
@@ -1302,123 +1427,6 @@ func (missionL) LoadMonsterLevelUpMission(ctx context.Context, e boil.ContextExe
 				local.R.MonsterLevelUpMission = foreign
 				if foreign.R == nil {
 					foreign.R = &monsterLevelUpMissionR{}
-				}
-				foreign.R.Mission = local
-				break
-			}
-		}
-	}
-
-	return nil
-}
-
-// LoadMonstersLevelUpMission allows an eager lookup of values, cached into the
-// loaded structs of the objects. This is for a 1-1 relationship.
-func (missionL) LoadMonstersLevelUpMission(ctx context.Context, e boil.ContextExecutor, singular bool, maybeMission interface{}, mods queries.Applicator) error {
-	var slice []*Mission
-	var object *Mission
-
-	if singular {
-		var ok bool
-		object, ok = maybeMission.(*Mission)
-		if !ok {
-			object = new(Mission)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybeMission)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeMission))
-			}
-		}
-	} else {
-		s, ok := maybeMission.(*[]*Mission)
-		if ok {
-			slice = *s
-		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybeMission)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeMission))
-			}
-		}
-	}
-
-	args := make([]interface{}, 0, 1)
-	if singular {
-		if object.R == nil {
-			object.R = &missionR{}
-		}
-		args = append(args, object.ID)
-	} else {
-	Outer:
-		for _, obj := range slice {
-			if obj.R == nil {
-				obj.R = &missionR{}
-			}
-
-			for _, a := range args {
-				if a == obj.ID {
-					continue Outer
-				}
-			}
-
-			args = append(args, obj.ID)
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	query := NewQuery(
-		qm.From(`monsters_level_up_missions`),
-		qm.WhereIn(`monsters_level_up_missions.mission_id in ?`, args...),
-	)
-	if mods != nil {
-		mods.Apply(query)
-	}
-
-	results, err := query.QueryContext(ctx, e)
-	if err != nil {
-		return errors.Wrap(err, "failed to eager load MonstersLevelUpMission")
-	}
-
-	var resultSlice []*MonstersLevelUpMission
-	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice MonstersLevelUpMission")
-	}
-
-	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for monsters_level_up_missions")
-	}
-	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for monsters_level_up_missions")
-	}
-
-	if len(monstersLevelUpMissionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(resultSlice) == 0 {
-		return nil
-	}
-
-	if singular {
-		foreign := resultSlice[0]
-		object.R.MonstersLevelUpMission = foreign
-		if foreign.R == nil {
-			foreign.R = &monstersLevelUpMissionR{}
-		}
-		foreign.R.Mission = object
-	}
-
-	for _, local := range slice {
-		for _, foreign := range resultSlice {
-			if local.ID == foreign.MissionID {
-				local.R.MonstersLevelUpMission = foreign
-				if foreign.R == nil {
-					foreign.R = &monstersLevelUpMissionR{}
 				}
 				foreign.R.Mission = local
 				break
@@ -2021,6 +2029,56 @@ func (o *Mission) SetMonsterKillMission(ctx context.Context, exec boil.ContextEx
 	return nil
 }
 
+// SetMonsterLevelUpCountMission of the mission to the related item.
+// Sets o.R.MonsterLevelUpCountMission to related.
+// Adds o to related.R.Mission.
+func (o *Mission) SetMonsterLevelUpCountMission(ctx context.Context, exec boil.ContextExecutor, insert bool, related *MonsterLevelUpCountMission) error {
+	var err error
+
+	if insert {
+		related.MissionID = o.ID
+
+		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+			return errors.Wrap(err, "failed to insert into foreign table")
+		}
+	} else {
+		updateQuery := fmt.Sprintf(
+			"UPDATE \"monster_level_up_count_missions\" SET %s WHERE %s",
+			strmangle.SetParamNames("\"", "\"", 1, []string{"mission_id"}),
+			strmangle.WhereClause("\"", "\"", 2, monsterLevelUpCountMissionPrimaryKeyColumns),
+		)
+		values := []interface{}{o.ID, related.ID}
+
+		if boil.IsDebug(ctx) {
+			writer := boil.DebugWriterFrom(ctx)
+			fmt.Fprintln(writer, updateQuery)
+			fmt.Fprintln(writer, values)
+		}
+		if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+			return errors.Wrap(err, "failed to update foreign table")
+		}
+
+		related.MissionID = o.ID
+	}
+
+	if o.R == nil {
+		o.R = &missionR{
+			MonsterLevelUpCountMission: related,
+		}
+	} else {
+		o.R.MonsterLevelUpCountMission = related
+	}
+
+	if related.R == nil {
+		related.R = &monsterLevelUpCountMissionR{
+			Mission: o,
+		}
+	} else {
+		related.R.Mission = o
+	}
+	return nil
+}
+
 // SetMonsterLevelUpMission of the mission to the related item.
 // Sets o.R.MonsterLevelUpMission to related.
 // Adds o to related.R.Mission.
@@ -2063,56 +2121,6 @@ func (o *Mission) SetMonsterLevelUpMission(ctx context.Context, exec boil.Contex
 
 	if related.R == nil {
 		related.R = &monsterLevelUpMissionR{
-			Mission: o,
-		}
-	} else {
-		related.R.Mission = o
-	}
-	return nil
-}
-
-// SetMonstersLevelUpMission of the mission to the related item.
-// Sets o.R.MonstersLevelUpMission to related.
-// Adds o to related.R.Mission.
-func (o *Mission) SetMonstersLevelUpMission(ctx context.Context, exec boil.ContextExecutor, insert bool, related *MonstersLevelUpMission) error {
-	var err error
-
-	if insert {
-		related.MissionID = o.ID
-
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "failed to insert into foreign table")
-		}
-	} else {
-		updateQuery := fmt.Sprintf(
-			"UPDATE \"monsters_level_up_missions\" SET %s WHERE %s",
-			strmangle.SetParamNames("\"", "\"", 1, []string{"mission_id"}),
-			strmangle.WhereClause("\"", "\"", 2, monstersLevelUpMissionPrimaryKeyColumns),
-		)
-		values := []interface{}{o.ID, related.ID}
-
-		if boil.IsDebug(ctx) {
-			writer := boil.DebugWriterFrom(ctx)
-			fmt.Fprintln(writer, updateQuery)
-			fmt.Fprintln(writer, values)
-		}
-		if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
-			return errors.Wrap(err, "failed to update foreign table")
-		}
-
-		related.MissionID = o.ID
-	}
-
-	if o.R == nil {
-		o.R = &missionR{
-			MonstersLevelUpMission: related,
-		}
-	} else {
-		o.R.MonstersLevelUpMission = related
-	}
-
-	if related.R == nil {
-		related.R = &monstersLevelUpMissionR{
 			Mission: o,
 		}
 	} else {

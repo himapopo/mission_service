@@ -27,7 +27,9 @@ type GetItemMission struct {
 	// ミッションID
 	MissionID int64 `boil:"mission_id" json:"mission_id" toml:"mission_id" yaml:"mission_id"`
 	// 獲得必要アイテムID
-	ItemID    int64     `boil:"item_id" json:"item_id" toml:"item_id" yaml:"item_id"`
+	ItemID int64 `boil:"item_id" json:"item_id" toml:"item_id" yaml:"item_id"`
+	// 獲得必要数
+	ItemCount int64     `boil:"item_count" json:"item_count" toml:"item_count" yaml:"item_count"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
@@ -39,12 +41,14 @@ var GetItemMissionColumns = struct {
 	ID        string
 	MissionID string
 	ItemID    string
+	ItemCount string
 	UpdatedAt string
 	CreatedAt string
 }{
 	ID:        "id",
 	MissionID: "mission_id",
 	ItemID:    "item_id",
+	ItemCount: "item_count",
 	UpdatedAt: "updated_at",
 	CreatedAt: "created_at",
 }
@@ -53,12 +57,14 @@ var GetItemMissionTableColumns = struct {
 	ID        string
 	MissionID string
 	ItemID    string
+	ItemCount string
 	UpdatedAt string
 	CreatedAt string
 }{
 	ID:        "get_item_missions.id",
 	MissionID: "get_item_missions.mission_id",
 	ItemID:    "get_item_missions.item_id",
+	ItemCount: "get_item_missions.item_count",
 	UpdatedAt: "get_item_missions.updated_at",
 	CreatedAt: "get_item_missions.created_at",
 }
@@ -69,12 +75,14 @@ var GetItemMissionWhere = struct {
 	ID        whereHelperint64
 	MissionID whereHelperint64
 	ItemID    whereHelperint64
+	ItemCount whereHelperint64
 	UpdatedAt whereHelpertime_Time
 	CreatedAt whereHelpertime_Time
 }{
 	ID:        whereHelperint64{field: "\"get_item_missions\".\"id\""},
 	MissionID: whereHelperint64{field: "\"get_item_missions\".\"mission_id\""},
 	ItemID:    whereHelperint64{field: "\"get_item_missions\".\"item_id\""},
+	ItemCount: whereHelperint64{field: "\"get_item_missions\".\"item_count\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"get_item_missions\".\"updated_at\""},
 	CreatedAt: whereHelpertime_Time{field: "\"get_item_missions\".\"created_at\""},
 }
@@ -117,8 +125,8 @@ func (r *getItemMissionR) GetMission() *Mission {
 type getItemMissionL struct{}
 
 var (
-	getItemMissionAllColumns            = []string{"id", "mission_id", "item_id", "updated_at", "created_at"}
-	getItemMissionColumnsWithoutDefault = []string{"mission_id", "item_id"}
+	getItemMissionAllColumns            = []string{"id", "mission_id", "item_id", "item_count", "updated_at", "created_at"}
+	getItemMissionColumnsWithoutDefault = []string{"mission_id", "item_id", "item_count"}
 	getItemMissionColumnsWithDefault    = []string{"id", "updated_at", "created_at"}
 	getItemMissionPrimaryKeyColumns     = []string{"id"}
 	getItemMissionGeneratedColumns      = []string{}

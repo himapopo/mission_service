@@ -114,17 +114,20 @@ var UserMissionWhere = struct {
 
 // UserMissionRels is where relationship names are stored.
 var UserMissionRels = struct {
-	Mission string
-	User    string
+	Mission               string
+	User                  string
+	UserMissionProgresses string
 }{
-	Mission: "Mission",
-	User:    "User",
+	Mission:               "Mission",
+	User:                  "User",
+	UserMissionProgresses: "UserMissionProgresses",
 }
 
 // userMissionR is where relationships are stored.
 type userMissionR struct {
-	Mission *Mission `boil:"Mission" json:"Mission" toml:"Mission" yaml:"Mission"`
-	User    *User    `boil:"User" json:"User" toml:"User" yaml:"User"`
+	Mission               *Mission                 `boil:"Mission" json:"Mission" toml:"Mission" yaml:"Mission"`
+	User                  *User                    `boil:"User" json:"User" toml:"User" yaml:"User"`
+	UserMissionProgresses UserMissionProgressSlice `boil:"UserMissionProgresses" json:"UserMissionProgresses" toml:"UserMissionProgresses" yaml:"UserMissionProgresses"`
 }
 
 // NewStruct creates a new relationship struct
@@ -144,6 +147,13 @@ func (r *userMissionR) GetUser() *User {
 		return nil
 	}
 	return r.User
+}
+
+func (r *userMissionR) GetUserMissionProgresses() UserMissionProgressSlice {
+	if r == nil {
+		return nil
+	}
+	return r.UserMissionProgresses
 }
 
 // userMissionL is where Load methods for each relationship are stored.
@@ -457,6 +467,20 @@ func (o *UserMission) User(mods ...qm.QueryMod) userQuery {
 	return Users(queryMods...)
 }
 
+// UserMissionProgresses retrieves all the user_mission_progress's UserMissionProgresses with an executor.
+func (o *UserMission) UserMissionProgresses(mods ...qm.QueryMod) userMissionProgressQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"user_mission_progresses\".\"user_mission_id\"=?", o.ID),
+	)
+
+	return UserMissionProgresses(queryMods...)
+}
+
 // LoadMission allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
 func (userMissionL) LoadMission(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserMission interface{}, mods queries.Applicator) error {
@@ -697,6 +721,120 @@ func (userMissionL) LoadUser(ctx context.Context, e boil.ContextExecutor, singul
 	return nil
 }
 
+// LoadUserMissionProgresses allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (userMissionL) LoadUserMissionProgresses(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserMission interface{}, mods queries.Applicator) error {
+	var slice []*UserMission
+	var object *UserMission
+
+	if singular {
+		var ok bool
+		object, ok = maybeUserMission.(*UserMission)
+		if !ok {
+			object = new(UserMission)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUserMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUserMission))
+			}
+		}
+	} else {
+		s, ok := maybeUserMission.(*[]*UserMission)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUserMission)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUserMission))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &userMissionR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &userMissionR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`user_mission_progresses`),
+		qm.WhereIn(`user_mission_progresses.user_mission_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load user_mission_progresses")
+	}
+
+	var resultSlice []*UserMissionProgress
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice user_mission_progresses")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on user_mission_progresses")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_mission_progresses")
+	}
+
+	if len(userMissionProgressAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.UserMissionProgresses = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &userMissionProgressR{}
+			}
+			foreign.R.UserMission = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.UserMissionID {
+				local.R.UserMissionProgresses = append(local.R.UserMissionProgresses, foreign)
+				if foreign.R == nil {
+					foreign.R = &userMissionProgressR{}
+				}
+				foreign.R.UserMission = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // SetMission of the userMission to the related item.
 // Sets o.R.Mission to related.
 // Adds o to related.R.UserMissions.
@@ -788,6 +926,59 @@ func (o *UserMission) SetUser(ctx context.Context, exec boil.ContextExecutor, in
 		related.R.UserMissions = append(related.R.UserMissions, o)
 	}
 
+	return nil
+}
+
+// AddUserMissionProgresses adds the given related objects to the existing relationships
+// of the user_mission, optionally inserting them as new records.
+// Appends related to o.R.UserMissionProgresses.
+// Sets related.R.UserMission appropriately.
+func (o *UserMission) AddUserMissionProgresses(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserMissionProgress) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.UserMissionID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"user_mission_progresses\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"user_mission_id"}),
+				strmangle.WhereClause("\"", "\"", 2, userMissionProgressPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.UserMissionID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &userMissionR{
+			UserMissionProgresses: related,
+		}
+	} else {
+		o.R.UserMissionProgresses = append(o.R.UserMissionProgresses, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &userMissionProgressR{
+				UserMission: o,
+			}
+		} else {
+			rel.R.UserMission = o
+		}
+	}
 	return nil
 }
 

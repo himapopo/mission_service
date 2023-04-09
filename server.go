@@ -22,18 +22,32 @@ func main() {
 	ur := database.NewuUserRepostitory(dbUtil)
 	lmr := database.NewLoginMissionRepostitory(dbUtil)
 	umr := database.NewUserMissionRepostitory(dbUtil)
+	umpr := database.NewUserMissionProgressRepostitory(dbUtil)
 	uir := database.NewUserItemRepostitory(dbUtil)
 	ccmr := database.NewCoinCountMissionRepostitory(dbUtil)
+	mkmr := database.NewMonsterKillMissionRepostitory(dbUtil)
+	mkkmr := database.NewMonsterKillCountMissionRepostitory(dbUtil)
 
 	// usecase
 	mru := mission.NewMissionRewardUsecase(
 		ur,
 		uir,
 	)
+	wmu := mission.NewWeeklyMissionUsecase(
+		mkkmr,
+		ur,
+		umr,
+		umpr,
+		mru,
+	)
 	nmu := mission.NewNormailMissionUsecase(
 		ccmr,
+		ur,
 		umr,
+		umpr,
+		mkmr,
 		mru,
+		wmu,
 	)
 	dmu := mission.NewDailyMissionUsecase(
 		ur,
@@ -45,9 +59,10 @@ func main() {
 
 	// controller
 	dmc := controller.NewDailyMissionController(dmu)
+	nmc := controller.NewNormalMissionController(nmu)
 
 	// router
-	router := router.NewRouter(e, dmc)
+	router := router.NewRouter(e, dmc, nmc)
 
 	router.Routing()
 

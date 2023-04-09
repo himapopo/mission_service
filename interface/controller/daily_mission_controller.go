@@ -9,7 +9,7 @@ import (
 )
 
 type DailyMissionUsecase interface {
-	Login(context.Context, dto.LoginMissionRequest) (int, error)
+	Login(context.Context, dto.LoginRequest) (int, error)
 }
 
 type dailyMissionController struct {
@@ -25,7 +25,7 @@ func NewDailyMissionController(
 }
 
 func (dmc dailyMissionController) Login(ctx *gin.Context) {
-	var params dto.LoginMissionRequest
+	var params dto.LoginRequest
 	ctx.ShouldBindJSON(&params)
 	status := http.StatusOK
 	message := ""
