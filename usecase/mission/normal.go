@@ -103,7 +103,7 @@ func (u normalMissionUsecase) MonsterKill(ctx context.Context, params dto.Monste
 	return http.StatusOK, nil
 }
 
-// ユーザーの所有コイン数から、達成済みのコイン獲得枚数ミッションがないかチェック
+// コイン獲得枚数ミッション達成チェック
 func (u normalMissionUsecase) CheckCoinCountMission(ctx context.Context, userID int64, requestedAt time.Time) error {
 	ccms, err := u.coinCountMissionRepository.FetchNotCompletedByUserID(ctx, userID)
 	if err != nil {
