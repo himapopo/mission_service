@@ -26,6 +26,7 @@ type normalMissionUsecase struct {
 	monsterLevelUpMissionRepository      repository.MonsterLevelUpMissionRepository
 	monsterLevelUpCountMissionRepository repository.MonsterLevelUpCountMissionRepository
 	missionRewardUsecase                 MissionRewardUsecase
+	missionReleaseUsecase                MissionReleaseUsecase
 }
 
 func NewNormailMissionUsecase(
@@ -38,6 +39,7 @@ func NewNormailMissionUsecase(
 	monsterLevelUpMissionRepository repository.MonsterLevelUpMissionRepository,
 	monsterLevelUpCountMissionRepository repository.MonsterLevelUpCountMissionRepository,
 	missionRewardUsecase MissionRewardUsecase,
+	missionReleaseUsecase MissionReleaseUsecase,
 ) normalMissionUsecase {
 	return normalMissionUsecase{
 		coinCountMissionRepository:           coinCountMissionRepository,
@@ -49,6 +51,7 @@ func NewNormailMissionUsecase(
 		monsterLevelUpMissionRepository:      monsterLevelUpMissionRepository,
 		monsterLevelUpCountMissionRepository: monsterLevelUpCountMissionRepository,
 		missionRewardUsecase:                 missionRewardUsecase,
+		missionReleaseUsecase:                missionReleaseUsecase,
 	}
 }
 
@@ -62,7 +65,7 @@ func (u normalMissionUsecase) MonsterLevelUpCountMission(ctx context.Context, us
 	if len(mlucms) == 0 {
 		return nil
 	}
-	
+
 	ms, err := u.userMonsterRepository.FetchByUserID(ctx, userID)
 	if err != nil {
 		return err
@@ -103,9 +106,18 @@ func (u normalMissionUsecase) MonsterLevelUpCountMission(ctx context.Context, us
 			return err
 		}
 
+		mission := mlucm.R.Mission
+
 		// ミッション報酬獲得
-		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mlucm.R.Mission); err != nil {
+		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mission); err != nil {
 			return err
+		}
+
+		// ミッション解放
+		if len(mission.R.CompleteMissionMissionReleases) != 0 {
+			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
+				return err
+			}
 		}
 
 	}
@@ -162,9 +174,18 @@ func (u normalMissionUsecase) MonsterLevelUpMission(ctx context.Context, userID,
 			return err
 		}
 
+		mission := mlum.R.Mission
+
 		// ミッション報酬獲得
 		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mlum.R.Mission); err != nil {
 			return err
+		}
+
+		// ミッション解放
+		if len(mission.R.CompleteMissionMissionReleases) != 0 {
+			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
+				return err
+			}
 		}
 
 	}
@@ -206,9 +227,18 @@ func (u normalMissionUsecase) MonsterKillMission(ctx context.Context, userID, my
 			return err
 		}
 
+		mission := mkm.R.Mission
+
 		// ミッション報酬獲得
 		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mkm.R.Mission); err != nil {
 			return err
+		}
+
+		// ミッション解放
+		if len(mission.R.CompleteMissionMissionReleases) != 0 {
+			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
+				return err
+			}
 		}
 
 	}
@@ -254,9 +284,18 @@ func (u normalMissionUsecase) CoinCountMission(ctx context.Context, userID int64
 			return err
 		}
 
+		mission := ccm.R.Mission
+
 		// ミッション報酬獲得
 		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, ccm.R.Mission); err != nil {
 			return err
+		}
+
+		// ミッション解放
+		if len(mission.R.CompleteMissionMissionReleases) != 0 {
+			if err := u.missionReleaseUsecase.MissionRelease(ctx, userID, mission.R.CompleteMissionMissionReleases); err != nil {
+				return err
+			}
 		}
 
 	}

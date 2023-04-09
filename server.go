@@ -20,32 +20,39 @@ func main() {
 	dbUtil := db.NewDB()
 
 	// repository
-	userRepository := database.NewuUserRepostitory(dbUtil)
-	loginMissionRepository := database.NewLoginMissionRepostitory(dbUtil)
-	userMissionRepository := database.NewUserMissionRepostitory(dbUtil)
-	userMissionProgressRepository := database.NewUserMissionProgressRepostitory(dbUtil)
-	userMonsterRepository := database.NewuUserMonsterRepostitory(dbUtil)
-	userItemRepository := database.NewUserItemRepostitory(dbUtil)
-	coinCountMissionRepository := database.NewCoinCountMissionRepostitory(dbUtil)
-	monsterkillMissionRepository := database.NewMonsterKillMissionRepostitory(dbUtil)
-	monsterkillCountMissionRepository := database.NewMonsterKillCountMissionRepostitory(dbUtil)
-	monsterLevelUpMissionRepository := database.NewMonsterLevelUpMissionRepostitory(dbUtil)
+	userRepository := database.NewUserRepository(dbUtil)
+	loginMissionRepository := database.NewLoginMissionRepository(dbUtil)
+	userMissionRepository := database.NewUserMissionRepository(dbUtil)
+	userMissionProgressRepository := database.NewUserMissionProgressRepository(dbUtil)
+	userMonsterRepository := database.NewuUserMonsterRepository(dbUtil)
+	userItemRepository := database.NewUserItemRepository(dbUtil)
+	coinCountMissionRepository := database.NewCoinCountMissionRepository(dbUtil)
+	monsterkillMissionRepository := database.NewMonsterKillMissionRepository(dbUtil)
+	monsterkillCountMissionRepository := database.NewMonsterKillCountMissionRepository(dbUtil)
+	monsterLevelUpMissionRepository := database.NewMonsterLevelUpMissionRepository(dbUtil)
+	monsterLevelUpCountMissionRepository := database.NewMonsterLevelUpCountMissionRepository(dbUtil)
 
 	// usecase
-	mru := mission.NewMissionRewardUsecase(
+	missionReleaseUsecase := mission.NewMissionReleaseUsecase(
+		userMissionRepository,
+		userMissionProgressRepository,
+	)
+
+	missionRewardUsecase := mission.NewMissionRewardUsecase(
 		userRepository,
 		userItemRepository,
 	)
 
-	wmu := mission.NewWeeklyMissionUsecase(
+	weeklyMissionUsecase := mission.NewWeeklyMissionUsecase(
 		monsterkillCountMissionRepository,
 		userRepository,
 		userMissionRepository,
 		userMissionProgressRepository,
-		mru,
+		missionRewardUsecase,
+		missionReleaseUsecase,
 	)
 
-	nmu := mission.NewNormailMissionUsecase(
+	normalMissionUsecase := mission.NewNormailMissionUsecase(
 		coinCountMissionRepository,
 		userRepository,
 		userMissionRepository,
@@ -53,21 +60,24 @@ func main() {
 		userMonsterRepository,
 		monsterkillMissionRepository,
 		monsterLevelUpMissionRepository,
-		mru,
+		monsterLevelUpCountMissionRepository,
+		missionRewardUsecase,
+		missionReleaseUsecase,
 	)
 
-	dmu := mission.NewDailyMissionUsecase(
+	dailyMissionUsecase := mission.NewDailyMissionUsecase(
 		userRepository,
 		loginMissionRepository,
 		userMissionRepository,
-		mru,
-		nmu,
+		missionRewardUsecase,
+		normalMissionUsecase,
+		missionReleaseUsecase,
 	)
 
 	eu := event.NewEventMissionUsecase(
-		dmu,
-		wmu,
-		nmu,
+		dailyMissionUsecase,
+		weeklyMissionUsecase,
+		normalMissionUsecase,
 	)
 
 	// controller

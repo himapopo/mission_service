@@ -8,6 +8,7 @@ var TableNames = struct {
 	GetItemMissions             string
 	Items                       string
 	LoginMissions               string
+	MissionReleases             string
 	MissionRewardCoins          string
 	MissionRewardItems          string
 	Missions                    string
@@ -26,6 +27,7 @@ var TableNames = struct {
 	GetItemMissions:             "get_item_missions",
 	Items:                       "items",
 	LoginMissions:               "login_missions",
+	MissionReleases:             "mission_releases",
 	MissionRewardCoins:          "mission_reward_coins",
 	MissionRewardItems:          "mission_reward_items",
 	Missions:                    "missions",

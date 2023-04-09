@@ -65,6 +65,13 @@ func (r loginMissionRepository) FetchByUserIDAndLoginCount(ctx context.Context, 
 				models.MissionRels.MissionRewardItems,
 			),
 		),
+		qm.Load(
+			qm.Rels(
+				models.LoginMissionRels.Mission,
+				models.MissionRels.CompleteMissionMissionReleases,
+				models.MissionReleaseRels.ReleaseMission,
+			),
+		),
 	).One(ctx, r.GetDao(ctx))
 	return result, r.Error(err)
 }

@@ -72,6 +72,13 @@ func (r coinCountMissionRepository) FetchNotCompletedByUserID(ctx context.Contex
 				models.MissionRels.MissionRewardItems,
 			),
 		),
+		qm.Load(
+			qm.Rels(
+				models.CoinCountMissionRels.Mission,
+				models.MissionRels.CompleteMissionMissionReleases,
+				models.MissionReleaseRels.ReleaseMission,
+			),
+		),
 	).All(ctx, r.GetDao(ctx))
 	return results, r.Error(err)
 }

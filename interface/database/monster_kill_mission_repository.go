@@ -73,6 +73,13 @@ func (r monsterKillMissionRepository) FetchNotCompletedByUserIDAndMonsterID(ctx 
 				models.MissionRels.MissionRewardItems,
 			),
 		),
+		qm.Load(
+			qm.Rels(
+				models.MonsterKillMissionRels.Mission,
+				models.MissionRels.CompleteMissionMissionReleases,
+				models.MissionReleaseRels.ReleaseMission,
+			),
+		),
 	).One(ctx, r.GetDao(ctx))
 	return result, r.Error(err)
 }

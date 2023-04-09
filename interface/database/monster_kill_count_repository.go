@@ -72,6 +72,13 @@ func (r monsterKillCountMissionRepository) FetchWeeklyByUserID(ctx context.Conte
 				models.MissionRels.MissionRewardItems,
 			),
 		),
+		qm.Load(
+			qm.Rels(
+				models.MonsterKillCountMissionRels.Mission,
+				models.MissionRels.CompleteMissionMissionReleases,
+				models.MissionReleaseRels.ReleaseMission,
+			),
+		),
 	).All(ctx, r.GetDao(ctx))
 	return results, r.Error(err)
 }

@@ -12,7 +12,7 @@ type userRepository struct {
 	dbUtil
 }
 
-func NewuUserRepository(dbUtil dbUtil) userRepository {
+func NewUserRepository(dbUtil dbUtil) userRepository {
 	return userRepository{
 		dbUtil: dbUtil,
 	}

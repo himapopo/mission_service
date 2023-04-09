@@ -25,3 +25,7 @@ func (r userMissionProgressRepository) Update(ctx context.Context, m *models.Use
 	}
 	return r.Error(err)
 }
+
+func (r userMissionProgressRepository) Create(ctx context.Context, m *models.UserMissionProgress) error {
+	return r.Error(m.Insert(ctx, r.GetDao(ctx), boil.Infer()))
+}

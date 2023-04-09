@@ -10,6 +10,7 @@ type router struct {
 type EventController interface {
 	Login(*gin.Context)
 	MonsterKill(*gin.Context)
+	MonsterLevelUp(*gin.Context)
 }
 
 func NewRouter(
@@ -25,4 +26,5 @@ func NewRouter(
 func (r router) Routing() {
 	r.e.POST("/login", r.eventController.Login)
 	r.e.POST("/monster_kill", r.eventController.MonsterKill)
+	r.e.POST("/monster_level_up", r.eventController.MonsterLevelUp)
 }
