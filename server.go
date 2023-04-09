@@ -20,47 +20,50 @@ func main() {
 	dbUtil := db.NewDB()
 
 	// repository
-	ur := database.NewuUserRepostitory(dbUtil)
-	lmr := database.NewLoginMissionRepostitory(dbUtil)
-	umr := database.NewUserMissionRepostitory(dbUtil)
-	umpr := database.NewUserMissionProgressRepostitory(dbUtil)
-	uir := database.NewUserItemRepostitory(dbUtil)
-	ccmr := database.NewCoinCountMissionRepostitory(dbUtil)
-	mkmr := database.NewMonsterKillMissionRepostitory(dbUtil)
-	mkkmr := database.NewMonsterKillCountMissionRepostitory(dbUtil)
+	userRepository := database.NewuUserRepostitory(dbUtil)
+	loginMissionRepository := database.NewLoginMissionRepostitory(dbUtil)
+	userMissionRepository := database.NewUserMissionRepostitory(dbUtil)
+	userMissionProgressRepository := database.NewUserMissionProgressRepostitory(dbUtil)
+	userMonsterRepository := database.NewuUserMonsterRepostitory(dbUtil)
+	userItemRepository := database.NewUserItemRepostitory(dbUtil)
+	coinCountMissionRepository := database.NewCoinCountMissionRepostitory(dbUtil)
+	monsterkillMissionRepository := database.NewMonsterKillMissionRepostitory(dbUtil)
+	monsterkillCountMissionRepository := database.NewMonsterKillCountMissionRepostitory(dbUtil)
+	monsterLevelUpMissionRepository := database.NewMonsterLevelUpMissionRepostitory(dbUtil)
 
 	// usecase
 	mru := mission.NewMissionRewardUsecase(
-		ur,
-		uir,
+		userRepository,
+		userItemRepository,
 	)
 
 	wmu := mission.NewWeeklyMissionUsecase(
-		mkkmr,
-		ur,
-		umr,
-		umpr,
+		monsterkillCountMissionRepository,
+		userRepository,
+		userMissionRepository,
+		userMissionProgressRepository,
 		mru,
 	)
 
 	nmu := mission.NewNormailMissionUsecase(
-		ccmr,
-		ur,
-		umr,
-		umpr,
-		mkmr,
+		coinCountMissionRepository,
+		userRepository,
+		userMissionRepository,
+		userMissionProgressRepository,
+		userMonsterRepository,
+		monsterkillMissionRepository,
+		monsterLevelUpMissionRepository,
 		mru,
-		wmu,
 	)
 
 	dmu := mission.NewDailyMissionUsecase(
-		ur,
-		lmr,
-		umr,
+		userRepository,
+		loginMissionRepository,
+		userMissionRepository,
 		mru,
 		nmu,
 	)
-	
+
 	eu := event.NewEventMissionUsecase(
 		dmu,
 		wmu,

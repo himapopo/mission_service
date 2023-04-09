@@ -17,6 +17,6 @@ type MonsterKillRequest struct {
 type MonsterLevelUpRequest struct {
 	UserID      int64     `json:"user_id"`
 	MyMonsterID int64     `json:"my_monster_id"`
-	Amount      int64     `json:"amount"`
+	Amount      int       `json:"amount"`
 	RequestedAt time.Time `json:"requested_at"`
 }

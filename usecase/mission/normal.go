@@ -12,17 +12,18 @@ import (
 type NormalMissionUsecase interface {
 	CoinCountMission(context.Context, int64, time.Time) error
 	MonsterKillMission(context.Context, int64, int64, int64, time.Time) error
-	MonsterLevelUpMission(context.Context, int64, int64, int64, time.Time) error
+	MonsterLevelUpMission(context.Context, int64, int64, int, time.Time) error
 }
 
 type normalMissionUsecase struct {
-	coinCountMissionRepository    repository.CoinCountMissionRepository
-	userRepository                repository.UserRepository
-	userMissionRepository         repository.UserMissionRepository
-	userMissionProgressRepository repository.UserMissionProgressRepository
-	monsterKillMissionRepository  repository.MonsterKillMissionRepository
-	missionRewardUsecase          MissionRewardUsecase
-	weeklyMissionUsecase          WeeklyMissionUsecase
+	coinCountMissionRepository      repository.CoinCountMissionRepository
+	userRepository                  repository.UserRepository
+	userMissionRepository           repository.UserMissionRepository
+	userMissionProgressRepository   repository.UserMissionProgressRepository
+	userMonsterRepository           repository.UserMonsterRepository
+	monsterKillMissionRepository    repository.MonsterKillMissionRepository
+	monsterLevelUpMissionRepository repository.MonsterLevelUpMissionRepository
+	missionRewardUsecase            MissionRewardUsecase
 }
 
 func NewNormailMissionUsecase(
@@ -30,30 +31,78 @@ func NewNormailMissionUsecase(
 	userRepository repository.UserRepository,
 	userMissionRepository repository.UserMissionRepository,
 	userMissionProgressRepository repository.UserMissionProgressRepository,
+	userMonsterRepository repository.UserMonsterRepository,
 	monsterKillMissionRepository repository.MonsterKillMissionRepository,
+	monsterLevelUpMissionRepository repository.MonsterLevelUpMissionRepository,
 	missionRewardUsecase MissionRewardUsecase,
-	weeklyMissionUsecase WeeklyMissionUsecase,
 ) normalMissionUsecase {
 	return normalMissionUsecase{
-		coinCountMissionRepository:    coinCountMissionRepository,
-		userRepository:                userRepository,
-		userMissionRepository:         userMissionRepository,
-		userMissionProgressRepository: userMissionProgressRepository,
-		monsterKillMissionRepository:  monsterKillMissionRepository,
-		missionRewardUsecase:          missionRewardUsecase,
-		weeklyMissionUsecase:          weeklyMissionUsecase,
+		coinCountMissionRepository:      coinCountMissionRepository,
+		userRepository:                  userRepository,
+		userMissionRepository:           userMissionRepository,
+		userMissionProgressRepository:   userMissionProgressRepository,
+		userMonsterRepository:           userMonsterRepository,
+		monsterKillMissionRepository:    monsterKillMissionRepository,
+		monsterLevelUpMissionRepository: monsterLevelUpMissionRepository,
+		missionRewardUsecase:            missionRewardUsecase,
 	}
 }
 
 // 特定のモンスターレベルアップ
-func (u normalMissionUsecase) MonsterLevelUpMission(ctx context.Context, userID, myMonsterID, amount int64, requestedAt time.Time) error {
+func (u normalMissionUsecase) MonsterLevelUpMission(ctx context.Context, userID, MyMonsterID int64, amount int, requestedAt time.Time) error {
+	// モンスターのレベルアップ
+	um, err := u.userMonsterRepository.Fetch(ctx, MyMonsterID)
+	if err != nil {
+		return err
+	}
+	um.Level += amount
+	if err := u.userMonsterRepository.Update(ctx, um, []string{
+		models.UserMonsterColumns.Level,
+		models.UserMonsterColumns.UpdatedAt,
+	}); err != nil {
+		return err
+	}
 
-	// 	// 一定レベル以上のモンスター獲得ミッション達成チェック
+	// ミッション達成チェック
+	mlums, err := u.monsterLevelUpMissionRepository.FetchNotCompletedByUserIDAndMonsterID(ctx, userID, MyMonsterID)
+	if err != nil {
+		return err
+	}
 
-	// 	// コイン獲得枚数ミッション達成チェック
-	// 	if err := u.CheckCoinCountMission(ctx, userID, requestedAt); err != nil {
-	// 		return err
-	// 	}
+	for _, mlum := range mlums {
+		ump := mlum.R.Mission.R.UserMissions[0].R.UserMissionProgresses[0]
+		ump.ProgressValue += int64(um.Level)
+		ump.LastProgressUpdatedAt = requestedAt
+		// ミッションの進捗更新
+		if err := u.userMissionProgressRepository.Update(ctx, ump, []string{
+			models.UserMissionProgressColumns.ProgressValue,
+			models.UserMissionProgressColumns.LastProgressUpdatedAt,
+			models.UserMissionProgressColumns.UpdatedAt,
+		}); err != nil {
+			return err
+		}
+
+		// ミッション未達成
+		if mlum.Level > um.Level {
+			continue
+		}
+
+		// ミッション達成日時更新
+		um := mlum.R.Mission.R.UserMissions[0]
+		um.CompletedAt = null.TimeFrom(requestedAt)
+		if err := u.userMissionRepository.Update(ctx, um, []string{
+			models.UserMissionColumns.CompletedAt,
+			models.UserMissionColumns.UpdatedAt,
+		}); err != nil {
+			return err
+		}
+
+		// ミッション報酬獲得
+		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mlum.R.Mission); err != nil {
+			return err
+		}
+
+	}
 
 	return nil
 }
@@ -77,22 +126,26 @@ func (u normalMissionUsecase) MonsterKillMission(ctx context.Context, userID, my
 			return err
 		}
 
-		// ミッション達成時
-		if mkm.MonsterCount <= ump.ProgressValue {
-			// ミッション達成日時更新
-			um := mkm.R.Mission.R.UserMissions[0]
-			um.CompletedAt = null.TimeFrom(requestedAt)
-			if err := u.userMissionRepository.Update(ctx, um, []string{
-				models.UserMissionColumns.CompletedAt,
-				models.UserMissionColumns.UpdatedAt,
-			}); err != nil {
-				return err
-			}
-			// ミッション報酬獲得
-			if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mkm.R.Mission); err != nil {
-				return err
-			}
+		// ミッション未達成
+		if mkm.MonsterCount > ump.ProgressValue {
+			return nil
 		}
+
+		// ミッション達成日時更新
+		um := mkm.R.Mission.R.UserMissions[0]
+		um.CompletedAt = null.TimeFrom(requestedAt)
+		if err := u.userMissionRepository.Update(ctx, um, []string{
+			models.UserMissionColumns.CompletedAt,
+			models.UserMissionColumns.UpdatedAt,
+		}); err != nil {
+			return err
+		}
+
+		// ミッション報酬獲得
+		if err := u.missionRewardUsecase.ObtainRewards(ctx, userID, mkm.R.Mission); err != nil {
+			return err
+		}
+
 	}
 
 	return nil

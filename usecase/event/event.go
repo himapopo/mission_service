@@ -82,13 +82,8 @@ func (u eventUsecase) MonsterKill(ctx context.Context, params dto.MonsterKillReq
 func (u eventUsecase) MonsterLevelUp(ctx context.Context, params dto.MonsterLevelUpRequest) (int, error) {
 	if err := db.InTx(ctx, func(ctx context.Context) error {
 
-		// 特定のモンスター討伐ミッション達成チェック
+		// 特定のモンスターレベルアップミッション達成チェック
 		if err := u.normalMissionUsecase.MonsterLevelUpMission(ctx, params.UserID, params.MyMonsterID, params.Amount, params.RequestedAt); err != nil {
-			return err
-		}
-
-		// 任意のモンスター討伐数ミッション達成チェック
-		if err := u.weeklyMissionUsecase.MonsterKillCountMission(ctx, params.UserID, params.RequestedAt); err != nil {
 			return err
 		}
 
