@@ -72,6 +72,7 @@ func main() {
 		userRepository,
 		loginMissionRepository,
 		userMissionRepository,
+		userMissionProgressRepository,
 		missionRewardUsecase,
 		normalMissionUsecase,
 		missionReleaseUsecase,

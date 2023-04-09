@@ -134,7 +134,7 @@ func (u normalMissionUsecase) MonsterLevelUpCountMission(ctx context.Context, us
 
 // 特定のモンスターレベルアップミッション
 func (u normalMissionUsecase) MonsterLevelUpMission(ctx context.Context, userID, userMonsterID int64, amount int, requestedAt time.Time) error {
-	// モンスターのレベルアップ
+	// モンスターのレベルアップ(※別システムでやる想定)	
 	m, err := u.userMonsterRepository.Fetch(ctx, userMonsterID)
 	if err != nil {
 		return err

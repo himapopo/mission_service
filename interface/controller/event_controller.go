@@ -30,40 +30,43 @@ func (ec eventController) Login(ctx *gin.Context) {
 	var params dto.LoginRequest
 	ctx.ShouldBindJSON(&params)
 	status := http.StatusOK
-	message := ""
+	res := dto.Response{
+		Result: true,
+	}
 	if s, err := ec.eventUsecase.Login(ctx, params); err != nil {
 		status = s
-		message = err.Error()
+		res.Error = err.Error()
+		res.Result = false
 	}
-	ctx.JSON(status, dto.Response{
-		Error: message,
-	})
+	ctx.JSON(status, res)
 }
 
 func (ec eventController) MonsterKill(ctx *gin.Context) {
 	var params dto.MonsterKillRequest
 	ctx.ShouldBindJSON(&params)
 	status := http.StatusOK
-	message := ""
+	res := dto.Response{
+		Result: true,
+	}
 	if s, err := ec.eventUsecase.MonsterKill(ctx, params); err != nil {
 		status = s
-		message = err.Error()
+		res.Error = err.Error()
+		res.Result = false
 	}
-	ctx.JSON(status, dto.Response{
-		Error: message,
-	})
+	ctx.JSON(status, res)
 }
 
 func (ec eventController) MonsterLevelUp(ctx *gin.Context) {
 	var params dto.MonsterLevelUpRequest
 	ctx.ShouldBindJSON(&params)
 	status := http.StatusOK
-	message := ""
+	res := dto.Response{
+		Result: true,
+	}
 	if s, err := ec.eventUsecase.MonsterLevelUp(ctx, params); err != nil {
 		status = s
-		message = err.Error()
+		res.Error = err.Error()
+		res.Result = false
 	}
-	ctx.JSON(status, dto.Response{
-		Error: message,
-	})
+	ctx.JSON(status, res)
 }
